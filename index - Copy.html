@@ -303,34 +303,10 @@
         display: block;
       }
       .whiteboard-controls {
-        margin-top: 0.5rem;
-        margin-bottom: 0.5rem;
-        width: 100vw;
-        box-sizing: border-box;
+        display: none;
+      }
+      .fab {
         display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        justify-content: center;
-      }
-      .whiteboard-controls button,
-      .whiteboard-controls input,
-      .whiteboard-controls select {
-        font-size: 1.1rem;
-        padding: 1rem;
-        margin-top: 0.5rem;
-        flex: 1 1 45%;
-        min-width: 120px;
-        max-width: 220px;
-      }
-      .text-marker {
-        font-size: 1.1rem;
-        padding: 6px 12px;
-      }
-      footer {
-        left: 0;
-        right: 0;
-        font-size: 1rem;
-        padding: 0.7rem;
       }
     }
     /* Sidebar toggle button for mobile */
@@ -354,6 +330,63 @@
       .sidebar-toggle {
         display: block;
       }
+    }
+    .fab {
+      display: none;
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 300;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+    }
+    .fab-main {
+      background: #0af;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .fab-main:active {
+      background: #08c;
+    }
+    .fab-menu {
+      display: none;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      margin-bottom: 8px;
+      pointer-events: none;
+    }
+    .fab.open .fab-menu {
+      display: flex;
+      pointer-events: auto;
+    }
+    .fab-action {
+      background: #222;
+      color: #0af;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 18px;
+      font-size: 1.1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      cursor: pointer;
+      min-width: 120px;
+      text-align: right;
+      transition: background 0.2s, color 0.2s;
+    }
+    .fab-action:active {
+      background: #0af;
+      color: #fff;
     }
   </style>
 </head>
@@ -401,6 +434,19 @@
         </div>
       </div>
     </main>
+
+    <!-- Floating Action Button for mobile -->
+    <div class="fab" id="fab">
+      <button class="fab-main" id="fabMainBtn" aria-label="Open actions" tabindex="0" aria-expanded="false">＋</button>
+      <div class="fab-menu" id="fabMenu">
+        <button class="fab-action" id="fabAddMarker">📍 Add Marker</button>
+        <button class="fab-action" id="fabSaveBoard">💾 Save Board</button>
+        <button class="fab-action" id="fabExportBoard">📤 Export Board</button>
+        <button class="fab-action" id="fabClearBoard">🧹 Clear Board</button>
+        <button class="fab-action" id="fabUndo">↩️ Undo</button>
+        <button class="fab-action" id="fabRedo">↪️ Redo</button>
+      </div>
+    </div>
 
     <footer>
       <p>Fan-made. Not affiliated with Activision. All rights belong to their respective owners.</p>
@@ -920,6 +966,41 @@
           sidebar.classList.add('open');
         }
       });
+    });
+
+    // FAB logic for mobile
+    function isMobile() {
+      return window.innerWidth <= 768;
+    }
+    function closeFabMenu() {
+      document.getElementById('fab').classList.remove('open');
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      // ... existing sidebar toggle ...
+      // FAB setup
+      const fab = document.getElementById('fab');
+      const fabMainBtn = document.getElementById('fabMainBtn');
+      const fabMenu = document.getElementById('fabMenu');
+      if (fab && fabMainBtn && fabMenu) {
+        fabMainBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const isOpen = fab.classList.toggle('open');
+          fabMainBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+        // Close FAB menu when clicking outside
+        document.addEventListener('click', function(e) {
+          if (isMobile() && fab.classList.contains('open') && !fab.contains(e.target)) {
+            closeFabMenu();
+          }
+        });
+        // FAB actions
+        document.getElementById('fabAddMarker').onclick = function() { addMarker(); closeFabMenu(); };
+        document.getElementById('fabSaveBoard').onclick = function() { saveBoard(); closeFabMenu(); };
+        document.getElementById('fabExportBoard').onclick = function() { exportAsImage(); closeFabMenu(); };
+        document.getElementById('fabClearBoard').onclick = function() { resetCanvas(); closeFabMenu(); };
+        document.getElementById('fabUndo').onclick = function() { undoDrawing(); closeFabMenu(); };
+        document.getElementById('fabRedo').onclick = function() { redoDrawing(); closeFabMenu(); };
+      }
     });
   </script>
 </body>
