@@ -1,0 +1,194 @@
+body { 
+  font-family: Arial, sans-serif; 
+  background-color: #111; 
+  color: #f0f0f0; 
+  margin: 0; 
+  padding: 0; 
+  display: flex; 
+}
+
+header { 
+  background-color: #222; 
+  padding: 1rem; 
+  text-align: center; 
+  width: 100%; 
+  position: fixed; 
+  top: 0; 
+  z-index: 10; 
+}
+
+h1 { 
+  margin: 0; 
+  font-size: 2rem; 
+}
+
+.sidebar { 
+  width: 220px; 
+  background-color: #1a1a1a; 
+  padding: 1rem; 
+  height: 100vh; 
+  box-sizing: border-box; 
+  margin-top: 80px; 
+  border-right: 1px solid #333; 
+}
+
+.sidebar h2 { 
+  font-size: 1.3rem; 
+  margin-top: 0; 
+  margin-bottom: 1rem; 
+}
+
+.sidebar ul { 
+  list-style: none; 
+  padding: 0; 
+}
+
+.sidebar li { 
+  background-color: #292929; 
+  margin-bottom: 0.5rem; 
+  padding: 0.6rem; 
+  border-radius: 6px; 
+  cursor: pointer; 
+  color: #0af; 
+  font-weight: bold; 
+  font-family: monospace; 
+  letter-spacing: 0.5px; 
+  text-transform: uppercase; 
+  transition: background 0.2s, transform 0.1s; 
+}
+
+.sidebar li:hover { 
+  background-color: #444; 
+  transform: scale(1.03); 
+}
+
+.whiteboard-controls { 
+  margin-top: 1rem; 
+}
+
+.whiteboard-controls input, 
+.whiteboard-controls select, 
+.whiteboard-controls button {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  display: block;
+  border-radius: 5px;
+  border: none;
+  background-color: #2a2a2a;
+  color: #f0f0f0;
+  font-weight: bold;
+  font-family: monospace;
+  transition: background 0.2s;
+}
+
+.whiteboard-controls select {
+  background-color: #333;
+  color: #0af;
+}
+
+.whiteboard-controls button:hover {
+  background-color: #0af;
+  color: #000;
+}
+
+main { 
+  padding: 2rem; 
+  margin-left: 220px; 
+  margin-top: 80px; 
+  width: 100%; 
+}
+
+.map-entry { 
+  display: block; 
+  position: relative; 
+  border: 1px solid #444; 
+  padding: 1rem; 
+  margin-bottom: 2rem; 
+  background-color: #1a1a1a; 
+  max-width: 800px; 
+  margin-left: auto; 
+  margin-right: auto; 
+  overflow: hidden; 
+  touch-action: none; 
+}
+
+.map-entry img { 
+  width: 100%; 
+  height: auto; 
+  max-height: 400px; 
+  object-fit: contain; 
+  border: 1px solid #666; 
+  display: block; 
+  cursor: grab; 
+  transition: transform 0.2s ease; 
+}
+
+.map-entry img.zoomed { 
+  transform: scale(2); 
+  transform-origin: center center; 
+}
+
+.map-entry h2 { 
+  margin-top: 0; 
+}
+
+.reset-button { 
+  display: block; 
+  margin: 0.5rem auto; 
+  padding: 0.5rem 1rem; 
+  background-color: #0af; 
+  color: #000; 
+  border: none; 
+  border-radius: 5px; 
+  cursor: pointer; 
+}
+
+.text-marker { 
+  position: absolute; 
+  background: rgba(0,0,0,0.8); 
+  color: #fff; 
+  padding: 4px 8px; 
+  border-radius: 4px; 
+  font-size: 0.9rem; 
+  cursor: move; 
+  user-select: none; 
+  z-index: 10; 
+}
+
+.text-marker:focus { 
+  outline: 3px solid #0af; 
+  outline-offset: 2px; 
+}
+
+footer { 
+  background-color: #222; 
+  padding: 1rem; 
+  text-align: center; 
+  font-size: 0.9rem; 
+  position: fixed; 
+  bottom: 0; 
+  width: 100%; 
+}
+
+canvas { 
+  border: 2px dashed #666; 
+  cursor: crosshair; 
+  position: absolute; 
+  left: 0; 
+  top: 0; 
+  z-index: 5; 
+}
+
+canvas:focus {
+  outline: 3px solid #0af;
+  outline-offset: 2px;
+}
+
+.keyboard-instructions {
+  background: #222;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+  border: 1px solid #0af;
+} 

@@ -1,0 +1,54 @@
+CODM Tactical Map Site - Step-by-Step Business Plan
+
+Step 1: Define Core Concept
+- Build a tactical map tool for CODM where players can draw routes and label positions.
+- Focus on a fast, user-friendly experience with visual clarity.
+
+Step 2: Build MVP (Minimum Viable Product)
+- Implement drawing routes with directional arrows.
+- Add label placement with undo/redo support.
+- Enable saving/loading/deleting whiteboards.
+- Keep design simple and functional.
+
+Step 3: Add Whiteboard Management
+- Allow users to name whiteboards.
+- Add interface to browse and select whiteboards.
+- Allow saving changes to existing whiteboards.
+
+Step 4: Polish the UI
+- Improve contrast and visibility.
+- Fix any bugs (e.g., red dots on labels, squiggly curves).
+- Remove unnecessary buttons/features (e.g., reset view).
+
+Step 5: Set Up Hosting
+- Use lightweight backend or LocalStorage for MVP.
+- Host on Vercel or similar ($10–20/month).
+- Register domain ($10/year).
+
+Step 6: Launch Free Version
+- Release the site with core features.
+- Share in CODM communities to start getting users.
+
+Step 7: Promote With Content
+- Make TikTok/YouTube Shorts showing map tips.
+- Share strategy examples on Reddit and Discord.
+- Target ranked players and scrim teams.
+
+Step 8: Add Monetization
+- Introduce premium tier:
+  - Unlimited whiteboards
+  - Collaboration tools
+  - Export to image/PDF
+  - Shareable links
+- Consider non-intrusive ads for free users.
+
+Step 9: Improve and Expand
+- Add team collaboration and Discord integration.
+- Expand support to other mobile FPS games.
+
+Step 10: Long-Term Goals
+- Become the go-to map planning tool for CODM.
+- Build a broader platform for FPS team strategy planning.
+
+End Result:
+Simple tool → strategic value → user growth → content-driven virality → monetization → expansion.

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CODM Tactical Map Guides</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #111; color: #f0f0f0; margin: 0; padding: 0; display: flex; }
+    header { background-color: #222; padding: 1rem; text-align: center; width: 100%; position: fixed; top: 0; z-index: 10; }
+    h1 { margin: 0; font-size: 2rem; }
+    .sidebar { width: 220px; background-color: #1a1a1a; padding: 1rem; height: 100vh; box-sizing: border-box; margin-top: 80px; border-right: 1px solid #333; }
+    .sidebar h2 { font-size: 1.3rem; margin-top: 0; margin-bottom: 1rem; }
+    .sidebar ul { list-style: none; padding: 0; }
+    .sidebar li { background-color: #292929; margin-bottom: 0.5rem; padding: 0.6rem; border-radius: 6px; cursor: pointer; color: #0af; font-weight: bold; font-family: monospace; letter-spacing: 0.5px; text-transform: uppercase; transition: background 0.2s, transform 0.1s; }
+    .sidebar li:hover { background-color: #444; transform: scale(1.03); }
+    .whiteboard-list { margin-top: 1rem; }
+    .whiteboard-list select, .whiteboard-list button, .whiteboard-list label, .whiteboard-list .upload-label { width: 100%; padding: 0.5rem; margin-top: 0.5rem; display: block; }
+    .whiteboard-list input[type="file"] { display: none; }
+    .upload-label { background-color: #0af; color: #000; text-align: center; border-radius: 5px; cursor: pointer; }
+    main { padding: 2rem; margin-left: 220px; margin-top: 80px; width: 100%; }
+    .map-entry { display: block; position: relative; border: 1px solid #444; padding: 1rem; margin-bottom: 2rem; background-color: #1a1a1a; max-width: 800px; margin-left: auto; margin-right: auto; overflow: hidden; touch-action: none; }
+    .map-entry img { width: 100%; height: auto; max-height: 400px; object-fit: contain; border: 1px solid #666; display: block; cursor: grab; transition: transform 0.2s ease; }
+    .map-entry img.zoomed { transform: scale(2); transform-origin: center center; }
+    .map-entry h2 { margin-top: 0; }
+    .reset-button { display: block; margin: 0.5rem auto; padding: 0.5rem 1rem; background-color: #0af; color: #000; border: none; border-radius: 5px; cursor: pointer; }
+    .text-marker { position: absolute; background: rgba(0,0,0,0.8); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.9rem; cursor: move; user-select: none; z-index: 10; }
+    .text-marker:focus { outline: 2px solid #0af; }
+    footer { background-color: #222; padding: 1rem; text-align: center; font-size: 0.9rem; position: fixed; bottom: 0; width: 100%; }
+    canvas { border: 2px dashed #666; cursor: crosshair; position: absolute; left: 0; top: 0; z-index: 5; }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Maps</h2>
+    <ul>
+      <li onclick="showMap('standoff')">📍 Standoff</li>
+    </ul>
+  </div>
+  <main>
+    <div class="map-entry" id="standoff">
+      <h2>Standoff Tactical Map</h2>
+      <img id="tacticalMap" src="standoff-clean.png" alt="Standoff Map">
+      <canvas id="drawingCanvas" width="800" height="400"></canvas>
+      <button class="reset-button" onclick="resetCanvas()">Clear Drawings</button>
+      <button class="reset-button" onclick="undoDrawing()">↩️ Undo</button>
+      <button class="reset-button" onclick="redoDrawing()">↪️ Redo</button>
+      <button class="reset-button" onclick="saveDrawing()">💾 Save</button>
+      <button class="reset-button" onclick="loadDrawing()">📂 Load</button>
+      <button class="reset-button" onclick="addTextMarker()">Add Text Marker</button>
+      <p>Click to draw. Use arrows for directions. Right-click text markers to delete. Drag and drop to move. Use undo/redo shortcuts (Ctrl+Z / Ctrl+Y).</p>
+    </div>
+  </main>
+  <footer>
+    <p>Fan-made. Not affiliated with Activision. All rights belong to their respective owners.</p>
+  </footer>
+  <script>
+    let canvas, ctx, drawing = false, path = [], drawings = [], undone = [];
+
+    window.onload = () => {
+      canvas = document.getElementById('drawingCanvas');
+      ctx = canvas.getContext('2d');
+      ctx.strokeStyle = '#0af';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+
+      canvas.addEventListener('mousedown', (e) => {
+        drawing = true;
+        path = [];
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        path.push({ x, y });
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+      });
+
+      canvas.addEventListener('mousemove', (e) => {
+        if (!drawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        path.push({ x, y });
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      });
+
+      canvas.addEventListener('mouseup', () => {
+        if (!drawing) return;
+        drawing = false;
+        ctx.closePath();
+        if (path.length > 1) {
+          const last = path[path.length - 1];
+          const secondLast = path[path.length - 2];
+          drawArrowhead(ctx, secondLast.x, secondLast.y, last.x, last.y);
+        }
+        drawings.push([...path]);
+        undone = [];
+      });
+
+      window.addEventListener('keydown', e => {
+        if (e.ctrlKey && e.key === 'z') undoDrawing();
+        if (e.ctrlKey && e.key === 'y') redoDrawing();
+      });
+
+      loadDrawing();
+      loadTextMarkers();
+    };
+
+    function drawArrowhead(ctx, fromX, fromY, toX, toY) {
+      const headlen = 10;
+      const angle = Math.atan2(toY - fromY, toX - fromX);
+      ctx.beginPath();
+      ctx.moveTo(toX, toY);
+      ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+      ctx.lineTo(toX, toY);
+      ctx.fillStyle = ctx.strokeStyle;
+      ctx.fill();
+    }
+
+    function resetCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawings = [];
+      undone = [];
+      document.querySelectorAll('.text-marker').forEach(el => el.remove());
+    }
+
+    function saveDrawing() {
+      localStorage.setItem('drawings', JSON.stringify(drawings));
+    }
+
+    function loadDrawing() {
+      const saved = JSON.parse(localStorage.getItem('drawings') || '[]');
+      drawings = saved;
+      redraw();
+    }
+
+    function undoDrawing() {
+      if (drawings.length === 0) return;
+      undone.push(drawings.pop());
+      redraw();
+    }
+
+    function redoDrawing() {
+      if (undone.length === 0) return;
+      drawings.push(undone.pop());
+      redraw();
+    }
+
+    function redraw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawings.forEach(path => {
+        ctx.beginPath();
+        ctx.moveTo(path[0].x, path[0].y);
+        for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, path[i].y);
+        ctx.stroke();
+        if (path.length > 1) drawArrowhead(ctx, path[path.length - 2].x, path[path.length - 2].y, path[path.length - 1].x, path[path.length - 1].y);
+        ctx.closePath();
+      });
+    }
+
+    function addTextMarker() {
+      const text = prompt('Enter tactical note:');
+      if (!text) return;
+      const marker = document.createElement('div');
+      marker.className = 'text-marker';
+      marker.textContent = text;
+      marker.setAttribute('tabindex', 0);
+      marker.style.left = '50%';
+      marker.style.top = '50%';
+      marker.style.position = 'absolute';
+      marker.style.zIndex = 10;
+      marker.draggable = true;
+      marker.onmousedown = startDrag;
+      marker.oncontextmenu = e => { e.preventDefault(); marker.remove(); saveTextMarkers(); };
+      canvas.parentElement.appendChild(marker);
+      saveTextMarkers();
+    }
+
+    function startDrag(e) {
+      const el = e.target;
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const origLeft = parseInt(el.style.left);
+      const origTop = parseInt(el.style.top);
+      function onMove(ev) {
+        const dx = ev.clientX - startX;
+        const dy = ev.clientY - startY;
+        el.style.left = `${origLeft + dx}px`;
+        el.style.top = `${origTop + dy}px`;
+      }
+      function onUp() {
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        saveTextMarkers();
+      }
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    }
+
+    function saveTextMarkers() {
+      const markers = Array.from(document.querySelectorAll('.text-marker')).map(m => ({
+        text: m.textContent,
+        x: m.style.left,
+        y: m.style.top
+      }));
+      localStorage.setItem('textMarkers', JSON.stringify(markers));
+    }
+
+    function loadTextMarkers() {
+      const saved = JSON.parse(localStorage.getItem('textMarkers') || '[]');
+      saved.forEach(data => {
+        const marker = document.createElement('div');
+        marker.className = 'text-marker';
+        marker.textContent = data.text;
+        marker.setAttribute('tabindex', 0);
+        marker.style.left = data.x;
+        marker.style.top = data.y;
+        marker.style.position = 'absolute';
+        marker.style.zIndex = 10;
+        marker.draggable = true;
+        marker.onmousedown = startDrag;
+        marker.oncontextmenu = e => { e.preventDefault(); marker.remove(); saveTextMarkers(); };
+        canvas.parentElement.appendChild(marker);
+      });
+    }
+
+    function showMap(id) {
+      document.querySelectorAll('.map-entry').forEach(div => div.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+    }
+  </script>
+</body>
+</html>

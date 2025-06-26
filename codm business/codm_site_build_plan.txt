@@ -1,0 +1,49 @@
+CODM Tactical Map Site - Building Plan
+
+1. Core Features to Build:
+- Interactive tactical map display
+- Draw routes with directional arrows
+- Label placement (supporting undo/redo)
+- Whiteboard saving/loading
+- Multiple whiteboard support (create, name, edit, delete)
+
+2. UI Components:
+- Sidebar navigation: list of saved whiteboards, tools (draw, label, erase)
+- Map area: main drawing canvas
+- Header: site title, save/load/delete buttons
+- Footer (optional): credits/info
+
+3. Functional Requirements:
+- Drawing tools: freeform drawing, directional routes, snapping
+- Labeling system: text-based, modifiable, undo/redo support
+- Save/load: store multiple whiteboards in local storage or server
+- Delete functionality for saved whiteboards
+
+4. Development Plan:
+Phase 1: Basic Layout and Drawing Tools
+- Set up HTML/CSS layout
+- Implement drawing on canvas
+- Add route creation with arrows
+- Label adding with undo/redo
+
+Phase 2: Whiteboard System
+- Create system to save whiteboards with names
+- Enable switching between whiteboards
+- Add update/save over existing whiteboard
+- Add delete functionality
+
+Phase 3: UI Polishing and Bug Fixes
+- Improve route curve handling
+- Prevent red dots on route labels
+- Refine contrast and visibility
+
+5. Stretch Goals:
+- User accounts & cloud sync
+- Shareable links
+- Mobile compatibility
+- Map overlays (e.g., spawn points, objectives)
+
+6. Technologies:
+- HTML/CSS/JavaScript (Vanilla or Vue.js)
+- Canvas API
+- Optional: LocalStorage / backend (Node.js + Express + DB)
