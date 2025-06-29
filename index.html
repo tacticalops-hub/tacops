@@ -114,7 +114,6 @@
       margin-left: 240px;
       width: calc(100% - 240px);
       box-sizing: border-box;
-      overflow-x: hidden;
     }
 
     h1 {
@@ -129,7 +128,7 @@
 
     .map-entry {
       position: relative;
-      width: fit-content;
+      width: auto;
       margin: 0 auto 2rem;
       padding: 1rem;
       background: #1a1a1a;
@@ -138,35 +137,36 @@
 
     .map-container {
       position: relative;
-      width: 600px;
-      height: 600px;
+      width: fit-content;
+      height: auto;
       margin: 0 auto;
-      max-width: 100vw;
       max-height: 100vw;
-      overflow: hidden;
+      overflow: visible !important;
     }
 
     .map-container img {
-      width: 100% !important;
-      height: 100% !important;
-      max-width: 100vw;
-      max-height: 100vw;
       display: block;
+      max-width: 100%;
+      height: auto;
     }
 
     .map-container canvas {
       position: absolute;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
       cursor: crosshair;
-      border: 2px dashed #666;
+      border: 2px solid red;
+      width: auto !important;
+      height: auto !important;
     }
 
-    .map-container canvas:focus {
-      outline: 3px solid #0af;
-      outline-offset: 2px;
+    /* Override mobile canvas sizing to allow JavaScript control */
+    @media (max-width: 768px) {
+      .map-container canvas {
+        width: auto !important;
+        height: auto !important;
+        position: absolute !important;
+      }
     }
 
     .map-entry h2 {
@@ -322,15 +322,13 @@
         max-height: 100vh !important;
         margin: 0 !important;
         position: relative;
-        overflow: hidden;
         background: none;
         z-index: 1;
       }
-      .map-container img,
-      .map-container canvas {
+      .map-container img {
         width: 100% !important;
         max-width: 100vw !important;
-        height: 100% !important;
+        height: auto !important;
         display: block;
         object-fit: contain;
       }
@@ -468,7 +466,6 @@
     }
     html, body {
       width: 100vw;
-      overflow-x: hidden;
     }
   </style>
 </head>
@@ -576,10 +573,9 @@
       }
       const activeMap = document.querySelector('.map-entry:not([style*="display: none"])');
       const mapId = activeMap.id;
-      const canvas = activeMap.querySelector('canvas');
       const boardData = {
         mapId: mapId,
-        drawing: canvas.toDataURL(),
+        drawings: getCurrentDrawingState().drawings,
         markers: mapMarkers[mapId]
       };
       const savedBoards = JSON.parse(localStorage.getItem('savedBoards') || '{}');
@@ -620,11 +616,11 @@
       const rect = canvas.getBoundingClientRect();
       let x, y;
       if (e.touches && e.touches.length > 0) {
-        x = (e.touches[0].clientX - rect.left) * (canvas.width / rect.width);
-        y = (e.touches[0].clientY - rect.top) * (canvas.height / rect.height);
+        x = (e.touches[0].clientX - rect.left) * (canvas.offsetWidth / rect.width);
+        y = (e.touches[0].clientY - rect.top) * (canvas.offsetHeight / rect.height);
       } else {
-        x = (e.clientX - rect.left) * (canvas.width / rect.width);
-        y = (e.clientY - rect.top) * (canvas.height / rect.height);
+        x = (e.clientX - rect.left) * (canvas.offsetWidth / rect.width);
+        y = (e.clientY - rect.top) * (canvas.offsetHeight / rect.height);
       }
       path = [{ x, y }];
       ctx.beginPath();
@@ -637,11 +633,11 @@
       const rect = canvas.getBoundingClientRect();
       let x, y;
       if (e.touches && e.touches.length > 0) {
-        x = (e.touches[0].clientX - rect.left) * (canvas.width / rect.width);
-        y = (e.touches[0].clientY - rect.top) * (canvas.height / rect.height);
+        x = (e.touches[0].clientX - rect.left) * (canvas.offsetWidth / rect.width);
+        y = (e.touches[0].clientY - rect.top) * (canvas.offsetHeight / rect.height);
       } else {
-        x = (e.clientX - rect.left) * (canvas.width / rect.width);
-        y = (e.clientY - rect.top) * (canvas.height / rect.height);
+        x = (e.clientX - rect.left) * (canvas.offsetWidth / rect.width);
+        y = (e.clientY - rect.top) * (canvas.offsetHeight / rect.height);
       }
       path.push({ x, y });
       ctx.lineWidth = 2;
@@ -718,29 +714,112 @@
 
     function setupCanvas(canvas) {
         if (!canvas) return;
+        
+        function attachEventListeners() {
+          // Remove existing listeners to prevent duplicates
+          canvas.removeEventListener('mousedown', startDrawing);
+          canvas.removeEventListener('mousemove', draw);
+          canvas.removeEventListener('mouseup', stopDrawing);
+          canvas.removeEventListener('mouseout', stopDrawing);
+          canvas.removeEventListener('touchstart', handleTouchStart);
+          canvas.removeEventListener('touchmove', handleTouchMove);
+          canvas.removeEventListener('touchend', handleTouchEnd);
+          canvas.removeEventListener('touchcancel', handleTouchEnd);
+          
+          // Add event listeners
+          canvas.addEventListener('mousedown', startDrawing);
+          canvas.addEventListener('mousemove', draw);
+          canvas.addEventListener('mouseup', stopDrawing);
+          canvas.addEventListener('mouseout', stopDrawing);
+          canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+          canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+          canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+          canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+        }
+        
         function resizeCanvas() {
           const parent = canvas.parentElement;
-          const width = parent.offsetWidth;
-          const height = parent.offsetHeight;
-          canvas.width = width;
-          canvas.height = height;
+          const mapImg = parent.querySelector('img');
+          
+          if (mapImg && mapImg.complete && mapImg.naturalWidth > 0) {
+            // Use getBoundingClientRect for both dimensions and positioning
+            const mapRect = mapImg.getBoundingClientRect();
+            const containerRect = parent.getBoundingClientRect();
+            
+            // Only proceed if the image has actual dimensions
+            if (mapRect.width > 0 && mapRect.height > 0) {
+              // Use the exact displayed dimensions for both internal and CSS
+              const canvasWidth = mapRect.width;
+              const canvasHeight = mapRect.height;
+              
+              // Set both internal canvas dimensions and CSS dimensions to match exactly
+              canvas.width = canvasWidth;
+              canvas.height = canvasHeight;
+              canvas.style.width = canvasWidth + 'px';
+              canvas.style.height = canvasHeight + 'px';
+              
+              // Position canvas to exactly overlay the image
+              // Get the image's actual position relative to its container
+              const imageRect = mapImg.getBoundingClientRect();
+              const parentRect = parent.getBoundingClientRect();
+              
+              // Calculate position relative to the parent container
+              const imageLeft = imageRect.left - parentRect.left;
+              const imageTop = imageRect.top - parentRect.top;
+              
+              canvas.style.left = imageLeft + 'px';
+              canvas.style.top = imageTop + 'px';
+              
+              // Reattach event listeners after resize
+              attachEventListeners();
+              
+              // Redraw if there are existing drawings
+              redraw();
+            }
+          }
         }
-        resizeCanvas();
+        
+        // Wait for image to load before initial resize
+        const mapImg = canvas.parentElement.querySelector('img');
+        if (mapImg) {
+          if (mapImg.complete && mapImg.naturalWidth > 0) {
+            // Image is already loaded, resize immediately
+            resizeCanvas();
+          } else {
+            // Wait for image to load
+            mapImg.onload = function() {
+              // Add a small delay to ensure the image is fully rendered
+              setTimeout(resizeCanvas, 100);
+            };
+          }
+        }
+        
         window.addEventListener('resize', resizeCanvas);
+        
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         ctx.strokeStyle = '#0af';
         ctx.lineWidth = 2;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        canvas.addEventListener('mousedown', startDrawing);
-        canvas.addEventListener('mousemove', draw);
-        canvas.addEventListener('mouseup', stopDrawing);
-        canvas.addEventListener('mouseout', stopDrawing);
-        // Touch events
-        canvas.addEventListener('touchstart', function(e) { e.preventDefault(); startDrawing(e); }, { passive: false });
-        canvas.addEventListener('touchmove', function(e) { e.preventDefault(); draw(e); }, { passive: false });
-        canvas.addEventListener('touchend', function(e) { e.preventDefault(); stopDrawing(e); }, { passive: false });
-        canvas.addEventListener('touchcancel', function(e) { e.preventDefault(); stopDrawing(e); }, { passive: false });
+        
+        // Initial event listener attachment
+        attachEventListeners();
+    }
+    
+    // Touch event handlers
+    function handleTouchStart(e) {
+      e.preventDefault();
+      startDrawing(e);
+    }
+    
+    function handleTouchMove(e) {
+      e.preventDefault();
+      draw(e);
+    }
+    
+    function handleTouchEnd(e) {
+      e.preventDefault();
+      stopDrawing(e);
     }
 
     // Update resetCanvas to clear drawings and markers for current map
@@ -770,6 +849,26 @@
       }
       // Update current map
       currentMap = mapId;
+      
+      // Resize canvas for the newly active map
+      setTimeout(() => {
+        const activeCanvas = getActiveCanvas();
+        if (activeCanvas) {
+          // Trigger the resize function
+          const resizeEvent = new Event('resize');
+          window.dispatchEvent(resizeEvent);
+          
+          // Ensure drawing is ready
+          setTimeout(() => {
+            const ctx = activeCanvas.getContext('2d', { willReadFrequently: true });
+            ctx.strokeStyle = '#0af';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+          }, 50);
+        }
+      }, 100);
+      
       redraw();
       // Update map label
       var mapLabel = document.getElementById('currentMapLabel');
@@ -788,21 +887,42 @@
         console.error('Canvas or map image not found');
         return;
       }
+      
       // Create a temporary canvas for export
       const exportCanvas = document.createElement('canvas');
       const exportCtx = exportCanvas.getContext('2d');
-      exportCanvas.width = mapImg.naturalWidth;
-      exportCanvas.height = mapImg.naturalHeight;
-      exportCtx.drawImage(mapImg, 0, 0, exportCanvas.width, exportCanvas.height);
-      // Draw the visible canvas (routes)
-      exportCtx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
+      
+      // Use canvas dimensions (which now match the map image's aspect ratio)
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+      exportCanvas.width = canvasWidth;
+      exportCanvas.height = canvasHeight;
+      
+      // Draw the map image at canvas size
+      exportCtx.drawImage(mapImg, 0, 0, canvasWidth, canvasHeight);
+      
+      // Draw the routes using stored coordinates directly (no scaling needed)
+      exportCtx.strokeStyle = 'rgba(0, 170, 255, 1)';
+      exportCtx.lineWidth = 2;
+      exportCtx.lineCap = 'round';
+      const { drawings } = getCurrentDrawingState();
+      drawings.forEach(path => {
+        if (path.length > 0) {
+          exportCtx.beginPath();
+          exportCtx.moveTo(path[0].x, path[0].y);
+          for (let i = 1; i < path.length; i++) {
+            exportCtx.lineTo(path[i].x, path[i].y);
+          }
+          exportCtx.stroke();
+        }
+      });
+      
       // Draw markers
       const markers = getCurrentMarkers();
-      const mapContainer = canvas.parentElement;
       markers.forEach(markerData => {
-        // Calculate pixel position
-        const x = markerData.x * exportCanvas.width;
-        const y = markerData.y * exportCanvas.height;
+        // Calculate pixel position using canvas dimensions
+        const x = markerData.x * canvasWidth;
+        const y = markerData.y * canvasHeight;
         // Draw marker background
         exportCtx.save();
         exportCtx.font = 'bold 18px Arial';
@@ -822,6 +942,7 @@
         exportCtx.fillText(text, x, y);
         exportCtx.restore();
       });
+      
       // Export as PNG
       const link = document.createElement('a');
       link.download = 'codm_board.png';
@@ -833,15 +954,20 @@
     window.deleteSelectedBoard = function() {
       const name = document.getElementById('savedBoards').value;
       if (!name || !confirm('Delete board: ' + name + '?')) return;
-      localStorage.removeItem('board_' + name);
+      
+      // Remove the board from the savedBoards object
+      const savedBoards = JSON.parse(localStorage.getItem('savedBoards') || '{}');
+      delete savedBoards[name];
+      localStorage.setItem('savedBoards', JSON.stringify(savedBoards));
+      
       updateBoardList();
       resetCanvas();
-      document.getElementById('mapTitle').textContent = 'Standoff Tactical Map';
+      document.getElementById('currentMapLabel').textContent = 'Standoff';
     };
 
     window.newBoard = function() {
       resetCanvas();
-      document.getElementById('mapTitle').textContent = 'Standoff Tactical Map';
+      document.getElementById('currentMapLabel').textContent = 'Standoff';
       document.getElementById('savedBoards').value = '';
     };
 
@@ -893,16 +1019,20 @@
       const savedBoards = JSON.parse(localStorage.getItem('savedBoards') || '{}');
       const boardData = savedBoards[boardName];
       if (!boardData) return;
+      
+      // Switch to the correct map
       switchMap(boardData.mapId);
-      const canvas = document.querySelector(`#${boardData.mapId} canvas`);
-      const img = new Image();
-      img.onload = function() {
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0);
-        currentDrawing = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      };
-      img.src = boardData.drawing;
+      
+      // Restore drawings
+      if (boardData.drawings) {
+        const { drawings, undone } = getCurrentDrawingState();
+        drawings.length = 0; // Clear current drawings
+        undone.length = 0;   // Clear undo stack
+        drawings.push(...boardData.drawings); // Restore saved drawings
+        redraw(); // Redraw the canvas
+      }
+      
+      // Restore markers
       mapMarkers[boardData.mapId] = boardData.markers || [];
       updateMarkers();
     };
