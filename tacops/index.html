@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CODM Tactical Map</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #111; color: #f0f0f0; margin: 0; padding: 0; display: flex; }
+    header { background-color: #222; padding: 1rem; text-align: center; width: 100%; position: fixed; top: 0; z-index: 10; }
+    h1 { margin: 0; font-size: 2rem; }
+    .sidebar { width: 220px; background-color: #1a1a1a; padding: 1rem; height: 100vh; box-sizing: border-box; margin-top: 80px; border-right: 1px solid #333; }
+    .sidebar h2 { font-size: 1.3rem; margin-top: 0; margin-bottom: 1rem; }
+    .sidebar ul { list-style: none; padding: 0; }
+    .sidebar li { background-color: #292929; margin-bottom: 0.5rem; padding: 0.6rem; border-radius: 6px; cursor: pointer; color: #0af; font-weight: bold; font-family: monospace; letter-spacing: 0.5px; text-transform: uppercase; transition: background 0.2s, transform 0.1s; }
+    .sidebar li:hover { background-color: #444; transform: scale(1.03); }
+    .whiteboard-controls {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .whiteboard-controls button,
+    .whiteboard-controls select {
+      padding: 0.5rem;
+      background-color: #333;
+      color: #fff;
+      border: 1px solid #666;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .whiteboard-controls button:hover,
+    .whiteboard-controls select:hover {
+      background-color: #444;
+      border-color: #888;
+    }
+    .whiteboard-controls select {
+      width: 100%;
+    }
+    main { padding: 2rem; margin-left: 220px; margin-top: 80px; width: 100%; }
+    .map-entry {
+      position: relative;
+      display: block;
+      margin: 20px auto;
+      border: 2px dashed #666;
+      padding: 10px;
+      background: #1a1a1a;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      max-width: 800px;
+      width: 100%;
+    }
+    .map-entry img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+    .map-entry canvas {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: calc(100% - 20px);
+      height: calc(100% - 20px);
+      pointer-events: all;
+    }
+    .map-entry h2 { margin-top: 0; }
+    .map-selector-container {
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .map-selector-container select {
+      padding: 8px 12px;
+      font-size: 16px;
+      background-color: #333;
+      color: #fff;
+      border: 1px solid #666;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .map-selector-container select:hover {
+      background-color: #444;
+      border-color: #888;
+    }
+    .reset-button { display: block; margin: 0.5rem auto; padding: 0.5rem 1rem; background-color: #0af; color: #000; border: none; border-radius: 5px; cursor: pointer; }
+    .text-marker {
+      position: absolute;
+      background: rgba(20, 20, 20, 0.85);
+      color: #f0f0f0;
+      padding: 4px 10px;
+      border: 1px solid #555;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-family: monospace;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      cursor: move;
+      user-select: none;
+      z-index: 10;
+      box-shadow: 0 0 4px rgba(0,0,0,0.4);
+      transition: all 0.2s ease;
+    }
+    .text-marker:focus {
+      outline: 2px dashed #888;
+      outline-offset: 2px;
+    }
+    .text-marker:hover {
+      background: rgba(30, 30, 30, 0.9);
+      border-color: #666;
+      box-shadow: 0 0 6px rgba(0,0,0,0.5);
+    }
+    footer { background-color: #222; padding: 1rem; text-align: center; font-size: 0.9rem; position: fixed; bottom: 0; width: 100%; }
+    canvas { border: 2px dashed #666; cursor: crosshair; position: absolute; left: 0; top: 0; z-index: 5; }
+    canvas:focus {
+      outline: 3px solid #0af;
+      outline-offset: 2px;
+    }
+    .keyboard-instructions {
+      background: #222;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+      border: 1px solid #0af;
+    }
+    .feedback {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 1000;
+    }
+    .feedback.success { background-color: #2ecc71; }
+    .feedback.error { background-color: #e74c3c; }
+    .feedback.show { opacity: 1; }
+    .loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .loading.show {
+      display: flex;
+    }
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #0af;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .map-selector-container {
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      background: #1a1a1a;
+      border-radius: 5px;
+      border: 1px solid #333;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
+      z-index: 100;
+    }
+    
+    .map-selector-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #0af;
+      font-weight: bold;
+      font-family: monospace;
+      text-align: center;
+    }
+    
+    #mapSelector {
+      width: 100%;
+      padding: 0.5rem;
+      background: #2a2a2a;
+      color: #f0f0f0;
+      border: 1px solid #444;
+      border-radius: 4px;
+      font-family: monospace;
+      cursor: pointer;
+      text-align: center;
+      appearance: menulist;
+      -webkit-appearance: menulist;
+      -moz-appearance: menulist;
+    }
+    
+    #mapSelector:hover {
+      border-color: #0af;
+    }
+    
+    #mapSelector:focus {
+      outline: 2px solid #0af;
+      outline-offset: 2px;
+    }
+
+    #mapSelector option {
+      background: #2a2a2a;
+      color: #f0f0f0;
+      padding: 0.5rem;
+    }
+
+    #mapSelector option:disabled {
+      color: #666;
+    }
+    .tool-buttons {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .tool-button {
+      padding: 8px 12px;
+      background-color: #333;
+      color: #fff;
+      border: 1px solid #666;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tool-button:hover {
+      background-color: #444;
+      border-color: #888;
+    }
+
+    .text-marker .resize-handle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #666;
+      border-radius: 50%;
+      bottom: -5px;
+      right: -5px;
+      cursor: nwse-resize;
+    }
+
+    .board-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .board-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .board-name {
+      flex: 1;
+      padding: 4px 8px;
+      background: #333;
+      border: 1px solid #555;
+      color: #fff;
+      cursor: pointer;
+      text-align: left;
+    }
+    .board-name:hover {
+      background: #444;
+    }
+    .delete-board {
+      padding: 4px 8px;
+      background: #333;
+      border: 1px solid #555;
+      color: #fff;
+      cursor: pointer;
+    }
+    .delete-board:hover {
+      background: #444;
+    }
+  </style>
+  <script>
+    // Global variables
+    let drawings = [];
+    let markers = [];
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+    let scale = 1;
+    let offsetX = 0;
+    let offsetY = 0;
+    let isDragging = false;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+    let undone = [];
+    let currentPath = [];
+
+    // Global functions
+    function switchMap(mapName) {
+      const mapImage = document.getElementById('tacticalMap');
+      const mapTitle = document.getElementById('mapTitle');
+      const canvas = document.getElementById('drawingCanvas');
+      const ctx = canvas.getContext('2d');
+      const currentMapTab = document.getElementById('currentMapTab');
+      const mapSelector = document.getElementById('mapTypeSelector');
+
+      // Reset the canvas and clear any existing drawings
+      resetCanvas();
+
+      // Update map image and title
+      if (mapName === 'standoff') {
+        mapImage.src = 'standoff-clean.png';
+        mapTitle.textContent = 'Standoff Tactical Map';
+        currentMapTab.textContent = '📍 Standoff';
+        mapSelector.value = 'standoff';
+      } else if (mapName === 'firing_range') {
+        mapImage.src = 'firing_range_alt.png';
+        mapTitle.textContent = 'Firing Range Tactical Map';
+        currentMapTab.textContent = '🎯 Firing Range';
+        mapSelector.value = 'firing_range';
+      }
+
+      // Ensure canvas matches map dimensions
+      mapImage.onload = function() {
+        canvas.width = mapImage.naturalWidth;
+        canvas.height = mapImage.naturalHeight;
+        setDrawingStyle();
+        updateBoardList();
+      };
+    }
+
+    function resetCanvas() {
+      const canvas = document.getElementById('drawingCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawings = [];
+      markers.forEach(m => m.remove());
+      markers = [];
+      document.getElementById('mapTitle').textContent = document.getElementById('mapTypeSelector').value === 'standoff' ? 'Standoff Tactical Map' : 'Firing Range Tactical Map';
+    }
+
+    function setDrawingStyle() {
+      const ctx = document.getElementById('drawingCanvas').getContext('2d');
+      ctx.strokeStyle = '#0af';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+    }
+
+    function loadSelectedBoard() {
+      const name = document.getElementById('savedBoardsSelector').value;
+      if (!name) return;
+      
+      const saved = localStorage.getItem('board_' + name);
+      if (!saved) {
+        alert('Failed to load board. Please try again.');
+        return;
+      }
+      
+      const data = JSON.parse(saved);
+      
+      // Check if board is for current map
+      const currentMapType = document.getElementById('mapTypeSelector').value;
+      if (data.mapType !== currentMapType) {
+        alert('This board was created for a different map.');
+        return;
+      }
+
+      // Ensure canvas dimensions are set before loading
+      const mapImage = document.getElementById('tacticalMap');
+      const canvas = document.getElementById('drawingCanvas');
+      canvas.width = mapImage.naturalWidth;
+      canvas.height = mapImage.naturalHeight;
+      
+      resetCanvas();
+      
+      // Load drawings exactly as they were saved
+      drawings = data.drawings || [];
+      
+      // Load markers
+      data.markers?.forEach(({ text, x, y }) => {
+        const marker = createMarker(text, x, y);
+        document.getElementById('drawingCanvas').parentElement.appendChild(marker);
+        markers.push(marker);
+      });
+      
+      setDrawingStyle();
+      redraw();
+      document.getElementById('mapTitle').textContent = `${data.mapType === 'standoff' ? 'Standoff' : 'Firing Range'} Tactical Map — ${name}`;
+    }
+
+    function saveCurrentBoard() {
+      const name = prompt('Enter a name for this board:');
+      if (!name) return; // User cancelled or entered empty name
+      
+      // Get current map type
+      const mapType = document.getElementById('mapTypeSelector').value;
+      console.log('Saving board:', name, 'for map:', mapType);
+      
+      const data = {
+        mapType: mapType,
+        drawings: drawings,
+        markers: markers.map(m => ({
+          text: m.textContent,
+          x: parseInt(m.style.left),
+          y: parseInt(m.style.top)
+        }))
+      };
+      localStorage.setItem('board_' + name, JSON.stringify(data));
+      updateBoardList();
+      showFeedback('Board saved');
+    }
+
+    function newBoard() {
+      resetCanvas();
+      document.getElementById('savedBoardsSelector').value = '';
+      document.getElementById('mapTitle').textContent = 'Standoff Tactical Map';
+    }
+
+    function deleteSelectedBoard() {
+      const selector = document.getElementById('savedBoardsSelector');
+      const selectedOption = selector.options[selector.selectedIndex];
+      
+      if (!selectedOption || selectedOption.value === '') {
+        console.log('No board selected');
+        return;
+      }
+      
+      const boardName = selectedOption.value;
+      console.log('Deleting board:', boardName);
+      
+      localStorage.removeItem('board_' + boardName);
+      selector.selectedIndex = 0; // Reset to first option
+      updateBoardList();
+      resetCanvas();
+      showFeedback('Board deleted');
+    }
+
+    function undoDrawing() {
+      if (drawings.length > 0) {
+        undone.push(drawings.pop());
+        redraw();
+      }
+    }
+
+    function redoDrawing() {
+      if (undone.length > 0) {
+        drawings.push(undone.pop());
+        redraw();
+      }
+    }
+
+    function updateBoardList() {
+      const boardListContainer = document.getElementById('boardListContainer');
+      const currentMapType = document.getElementById('mapTypeSelector').value;
+      console.log('Updating board list for map:', currentMapType);
+      
+      // Get all saved boards
+      const keys = Object.keys(localStorage)
+        .filter(k => k.startsWith('board_'))
+        .map(k => k.replace('board_', ''));
+      
+      console.log('All saved boards:', keys);
+      
+      // Filter boards for current map type
+      const filteredBoards = keys.filter(name => {
+        const saved = localStorage.getItem('board_' + name);
+        if (!saved) return false;
+        const data = JSON.parse(saved);
+        return data.mapType === currentMapType;
+      });
+
+      console.log('Filtered boards:', filteredBoards);
+
+      // Clear the container
+      boardListContainer.innerHTML = '';
+      
+      // Add each board to the list
+      filteredBoards.forEach(name => {
+        const boardItem = document.createElement('div');
+        boardItem.className = 'board-item';
+        
+        const loadButton = document.createElement('button');
+        loadButton.textContent = name;
+        loadButton.onclick = () => loadBoard(name);
+        loadButton.className = 'board-name';
+        
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = '🗑️';
+        deleteButton.onclick = () => deleteBoard(name);
+        deleteButton.className = 'delete-board';
+        
+        boardItem.appendChild(loadButton);
+        boardItem.appendChild(deleteButton);
+        boardListContainer.appendChild(boardItem);
+      });
+    }
+
+    function loadBoard(name) {
+      const saved = localStorage.getItem('board_' + name);
+      if (!saved) {
+        alert('Failed to load board. Please try again.');
+        return;
+      }
+      
+      const data = JSON.parse(saved);
+      
+      // Check if board is for current map
+      const currentMapType = document.getElementById('mapTypeSelector').value;
+      if (data.mapType !== currentMapType) {
+        alert('This board was created for a different map.');
+        return;
+      }
+
+      // Ensure canvas dimensions are set before loading
+      const mapImage = document.getElementById('tacticalMap');
+      const canvas = document.getElementById('drawingCanvas');
+      canvas.width = mapImage.naturalWidth;
+      canvas.height = mapImage.naturalHeight;
+      
+      resetCanvas();
+      
+      // Load drawings exactly as they were saved
+      drawings = data.drawings || [];
+      
+      // Load markers
+      data.markers?.forEach(({ text, x, y }) => {
+        const marker = createMarker(text, x, y);
+        document.getElementById('drawingCanvas').parentElement.appendChild(marker);
+        markers.push(marker);
+      });
+      
+      setDrawingStyle();
+      redraw();
+      document.getElementById('mapTitle').textContent = `${data.mapType === 'standoff' ? 'Standoff' : 'Firing Range'} Tactical Map — ${name}`;
+    }
+
+    function deleteBoard(name) {
+      if (confirm(`Are you sure you want to delete "${name}"?`)) {
+        localStorage.removeItem('board_' + name);
+        updateBoardList();
+        resetCanvas();
+        showFeedback('Board deleted');
+      }
+    }
+
+    function showFeedback(message, type = 'success') {
+      const feedback = document.getElementById('feedback');
+      feedback.textContent = message;
+      feedback.className = `feedback ${type} show`;
+      setTimeout(() => {
+        feedback.className = 'feedback';
+      }, 3000);
+    }
+
+    function createMarker(text, x, y) {
+      const marker = document.createElement('div');
+      marker.className = 'text-marker';
+      marker.textContent = text;
+      marker.style.left = `${x}px`;
+      marker.style.top = `${y}px`;
+      marker.setAttribute('tabindex', '0');
+      marker.setAttribute('draggable', 'true');
+      marker.setAttribute('aria-label', `Tactical marker: ${text}`);
+
+      // Make marker draggable
+      let isDragging = false;
+      let startX, startY;
+      let initialLeft, initialTop;
+
+      marker.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        initialLeft = parseInt(marker.style.left);
+        initialTop = parseInt(marker.style.top);
+        marker.style.zIndex = '1001';
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        marker.style.left = `${initialLeft + dx}px`;
+        marker.style.top = `${initialTop + dy}px`;
+      });
+
+      document.addEventListener('mouseup', () => {
+        isDragging = false;
+        marker.style.zIndex = '1000';
+      });
+
+      // Make marker editable
+      marker.addEventListener('dblclick', () => {
+        const newText = prompt('Edit marker text:', text);
+        if (newText) {
+          marker.textContent = newText;
+          marker.setAttribute('aria-label', `Tactical marker: ${newText}`);
+        }
+      });
+
+      // Make marker deletable
+      marker.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        if (confirm('Delete this marker?')) {
+          marker.remove();
+          markers = markers.filter(m => m !== marker);
+        }
+      });
+
+      return marker;
+    }
+
+    function redraw() {
+      const canvas = document.getElementById('drawingCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      setDrawingStyle();
+      drawings.forEach(path => {
+        if (!path.length) return;
+        ctx.beginPath();
+        ctx.moveTo(path[0].x, path[0].y);
+        for (let i = 1; i < path.length; i++) {
+          ctx.lineTo(path[i].x, path[i].y);
+        }
+        ctx.stroke();
+      });
+    }
+
+    function addMarker() {
+      const text = prompt('Enter marker text:');
+      if (!text) return;
+
+      const canvas = document.getElementById('drawingCanvas');
+      const rect = canvas.getBoundingClientRect();
+      const x = rect.width / 2;
+      const y = rect.height / 2;
+
+      const marker = createMarker(text, x, y);
+      canvas.parentElement.appendChild(marker);
+      markers.push(marker);
+    }
+
+    // Initialize canvas when the page loads
+    window.onload = function() {
+      const canvas = document.getElementById('drawingCanvas');
+      const ctx = canvas.getContext('2d');
+      setDrawingStyle();
+
+      // Drawing event handlers
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+      canvas.addEventListener('mouseup', stopDrawing);
+      canvas.addEventListener('touchend', stopDrawing);
+      canvas.addEventListener('mouseout', stopDrawing);
+      canvas.addEventListener('touchcancel', stopDrawing);
+
+      updateBoardList();
+    };
+
+    function startDrawing(e) {
+      if (e.type === 'mousedown') {
+        e.preventDefault();
+      }
+      isDrawing = true;
+      currentPath = [];
+      const { x, y } = getCanvasCoords(e);
+      currentPath.push({ x, y });
+      setDrawingStyle();
+      const ctx = document.getElementById('drawingCanvas').getContext('2d');
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+
+    function handleTouchStart(e) {
+      e.preventDefault();
+      if (e.touches.length === 1) {
+        const touch = e.touches[0];
+        const touchEvent = {
+          clientX: touch.clientX,
+          clientY: touch.clientY,
+          type: 'touchstart'
+        };
+        startDrawing(touchEvent);
+      }
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      if (e.type === 'mousemove') {
+        e.preventDefault();
+      }
+      setDrawingStyle();
+      const { x, y } = getCanvasCoords(e);
+      currentPath.push({ x, y });
+      const ctx = document.getElementById('drawingCanvas').getContext('2d');
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    }
+
+    function handleTouchMove(e) {
+      e.preventDefault();
+      if (e.touches.length === 1) {
+        const touch = e.touches[0];
+        const touchEvent = {
+          clientX: touch.clientX,
+          clientY: touch.clientY,
+          type: 'touchmove'
+        };
+        draw(touchEvent);
+      }
+    }
+
+    function stopDrawing(e) {
+      if (!isDrawing) return;
+      if (e.type === 'mouseup' || e.type === 'mouseout') {
+        e.preventDefault();
+      }
+      isDrawing = false;
+      if (currentPath.length > 0) {
+        drawings.push([...currentPath]);
+        undone = [];
+      }
+    }
+
+    function getCanvasCoords(e) {
+      const canvas = document.getElementById('drawingCanvas');
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+      const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+      return { 
+        x: (clientX - rect.left) * scaleX, 
+        y: (clientY - rect.top) * scaleY 
+      };
+    }
+
+    function exportBoard() {
+      const canvas = document.getElementById('drawingCanvas');
+      const link = document.createElement('a');
+      link.download = 'tactical_map.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+  </script>
+</head>
+<body>
+  <div class="feedback" id="feedback"></div>
+  <div class="loading" id="loading">
+    <div class="loading-spinner"></div>
+  </div>
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3>Current Map</h3>
+    </div>
+    <ul class="sidebar-tabs">
+      <li id="currentMapTab" style="background-color: #444;">📍 Standoff</li>
+    </ul>
+    <div class="whiteboard-controls">
+      <div class="sidebar-controls">
+        <button onclick="newBoard()" class="control-button">New Board</button>
+        <button onclick="saveCurrentBoard()" class="control-button">Save Board</button>
+        <div id="boardListContainer" class="board-list"></div>
+      </div>
+      <button onclick="resetCanvas()" aria-label="Clear all drawings">🧹 Clear Board</button>
+      <button onclick="undoDrawing()" aria-label="Undo last drawing">↩️ Undo</button>
+      <button onclick="redoDrawing()" aria-label="Redo last undone drawing">↪️ Redo</button>
+    </div>
+  </div>
+  <main>
+    <div class="map-entry" id="standoff">
+      <h2 id="mapTitle">Standoff Tactical Map</h2>
+      <div class="map-selector-container">
+        <select id="mapTypeSelector" onchange="switchMap(this.value)" aria-label="Select map type">
+          <option value="standoff">Standoff</option>
+          <option value="firing_range">Firing Range</option>
+        </select>
+      </div>
+      <img id="tacticalMap" src="standoff-clean.png" alt="Standoff Map">
+      <canvas id="drawingCanvas" width="800" height="400" tabindex="0"></canvas>
+      <p>Click to add/edit a label. Draw to plan routes. Zoom with double-click or pinch. Drag when zoomed.</p>
+    </div>
+  </main>
+</body>
+</html>
