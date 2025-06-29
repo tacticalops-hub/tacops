@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CODM Tactical Map Guides</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      min-height: 100vh;
+      background-color: #111;
+      color: #f0f0f0;
+      overflow-x: hidden; /* Prevent horizontal scroll */
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: #1a1a1a;
+      padding: 1rem;
+      height: 100vh;
+      box-sizing: border-box;
+      border-right: 1px solid #333;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 100;
+      transition: transform 0.3s ease;
+      transform: translateX(0);
+    }
+
+    .sidebar h2 {
+      font-size: 1.3rem;
+      margin-top: 0;
+      margin-bottom: 1rem;
+      color: #0af;
+    }
+
+    .map-selector {
+      position: fixed;
+      top: 3.2rem;
+      left: 100px;
+      width: 110px !important;
+      min-width: 0 !important;
+      max-width: 40vw !important;
+      z-index: 250;
+      background: #181c24;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+      padding: 0.2rem 0.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #222;
+      transition: left 0.3s cubic-bezier(.4,0,.2,1);
+      box-sizing: border-box;
+    }
+
+    .map-selector select {
+      width: 2.2em;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      font-size: 0.9rem;
+      text-align: center;
+      background: #232a36;
+      color: #0af;
+      border: none;
+      border-radius: 8px;
+      padding: 0.2rem 0.3rem;
+      font-family: inherit;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      outline: none;
+      transition: background 0.2s, color 0.2s;
+      box-sizing: border-box;
+    }
+
+    .map-selector option {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .whiteboard-controls {
+      margin-top: 1rem;
+    }
+
+    .whiteboard-controls button {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      display: block;
+      border-radius: 5px;
+      border: none;
+      background-color: #2a2a2a;
+      color: #f0f0f0;
+      font-weight: bold;
+      font-family: monospace;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .whiteboard-controls button:hover {
+      background-color: #0af;
+      color: #000;
+    }
+
+    main {
+      padding: 2rem;
+      margin-left: 240px;
+      width: calc(100% - 240px);
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      margin: 0;
+      padding: 1rem;
+      color: #0af;
+      font-size: 1.5rem;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .map-entry {
+      position: relative;
+      width: fit-content;
+      margin: 0 auto 2rem;
+      padding: 1rem;
+      background: #1a1a1a;
+      border: 1px solid #444;
+    }
+
+    .map-container {
+      position: relative;
+      width: 600px;
+      height: 600px;
+      margin: 0 auto;
+      max-width: 100vw;
+      max-height: 100vw;
+      overflow: hidden;
+    }
+
+    .map-container img {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100vw;
+      max-height: 100vw;
+      display: block;
+    }
+
+    .map-container canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      border: 2px dashed #666;
+    }
+
+    .map-container canvas:focus {
+      outline: 3px solid #0af;
+      outline-offset: 2px;
+    }
+
+    .map-entry h2 {
+      margin: 0 0 1rem 0;
+      color: #fff;
+      text-align: center;
+    }
+
+    .controls {
+      margin-top: 1rem;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .controls input,
+    .controls select {
+      padding: 8px;
+      background-color: #333;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 4px;
+      font-size: 1em;
+    }
+
+    .controls button {
+      padding: 8px 16px;
+      background-color: #333;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background-color 0.2s;
+    }
+
+    .controls button:hover {
+      background-color: #444;
+    }
+
+    .text-marker {
+      position: absolute;
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      cursor: move;
+      user-select: none;
+      z-index: 10;
+    }
+
+    .text-marker:focus {
+      outline: 3px solid #0af;
+      outline-offset: 2px;
+    }
+
+    footer {
+      background-color: #222;
+      padding: 1rem;
+      text-align: center;
+      font-size: 0.9rem;
+      position: fixed;
+      bottom: 0;
+      left: 220px;
+      right: 0;
+    }
+
+    .keyboard-instructions {
+      background: #222;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+      border: 1px solid #0af;
+    }
+
+    .board-input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      background-color: #2a2a2a;
+      color: #f0f0f0;
+      border: 1px solid #444;
+      border-radius: 5px;
+      font-size: 0.9rem;
+    }
+
+    .board-select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      background-color: #2a2a2a;
+      color: #f0f0f0;
+      border: 1px solid #444;
+      border-radius: 5px;
+      font-size: 0.9rem;
+    }
+
+    .board-input:focus,
+    .board-select:focus {
+      outline: 2px solid #0af;
+      border-color: #0af;
+    }
+
+    @media (max-width: 768px) {
+      html, body, main {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      h1 {
+        display: none !important;
+      }
+      .sidebar {
+        width: 60px !important;
+        min-width: 60px !important;
+        max-width: 60px !important;
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        z-index: 200;
+        transform: translateX(-100%) !important;
+        transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+      }
+      .sidebar.open {
+        transform: translateX(0) !important;
+      }
+      .sidebar-toggle {
+        position: fixed;
+        top: 18px;
+        left: 10px;
+        z-index: 300;
+        transition: left 0.3s cubic-bezier(.4,0,.2,1);
+      }
+      .sidebar.open ~ .sidebar-toggle {
+        left: 70px;
+      }
+      main {
+        margin-left: 0 !important;
+        width: 100vw !important;
+        padding: 0 !important;
+        position: relative;
+        z-index: 1;
+        margin-top: 5.5rem !important;
+      }
+      .map-container {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        margin: 0 !important;
+        position: relative;
+        overflow: hidden;
+        background: none;
+        z-index: 1;
+      }
+      .map-container img,
+      .map-container canvas {
+        width: 100% !important;
+        max-width: 100vw !important;
+        height: 100% !important;
+        display: block;
+        object-fit: contain;
+      }
+      .map-selector {
+        position: fixed;
+        top: 1rem;
+        left: 100px;
+        width: 220px;
+        max-width: calc(100vw - 80px);
+        z-index: 250;
+        background: #181c24;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #222;
+        transition: left 0.3s cubic-bezier(.4,0,.2,1);
+      }
+      .map-selector select {
+        width: 100%;
+        background: #232a36;
+        color: #0af;
+        border: none;
+        border-radius: 8px;
+        padding: 0.6rem 0.8rem;
+        font-size: 1.1rem;
+        font-family: inherit;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        outline: none;
+        transition: background 0.2s, color 0.2s;
+      }
+      .map-selector select:focus {
+        background: #1a2330;
+        color: #fff;
+      }
+    }
+    /* Sidebar toggle button for mobile */
+    .sidebar-toggle {
+      display: none;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 200;
+      background: #0af;
+      color: #111;
+      border: none;
+      border-radius: 6px;
+      padding: 0.7rem 1.2rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+    @media (max-width: 768px) {
+      .sidebar-toggle {
+        display: block;
+      }
+    }
+    .fab {
+      display: none;
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 300;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+    }
+    .fab-main {
+      background: #0af;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .fab-main:active {
+      background: #08c;
+    }
+    .fab-menu {
+      display: none;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      margin-bottom: 8px;
+      pointer-events: none;
+    }
+    .fab.open .fab-menu {
+      display: flex;
+      pointer-events: auto;
+    }
+    .fab-action {
+      background: #222;
+      color: #0af;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 18px;
+      font-size: 1.1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      cursor: pointer;
+      min-width: 120px;
+      text-align: right;
+      transition: background 0.2s, color 0.2s;
+    }
+    .fab-action:active {
+      background: #0af;
+      color: #fff;
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 150;
+    }
+    .sidebar.open ~ .sidebar-overlay {
+      display: block;
+    }
+    @media (min-width: 769px) {
+      .sidebar-overlay {
+        display: none !important;
+      }
+    }
+    html, body {
+      width: 100vw;
+      overflow-x: hidden;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>CODM Map Routes</h1>
+    <div class="sidebar">
+      <div class="whiteboard-controls">
+        <input type="text" id="boardName" placeholder="Enter board name" class="board-input">
+        <button id="saveBoardBtn" aria-label="Save current board"><span class="icon">💾</span><span class="label"> Save Board</span></button>
+        <select id="savedBoards" onchange="loadBoard()" class="board-select">
+          <option value="">Select a saved board</option>
+        </select>
+        <button onclick="resetCanvas()" aria-label="Clear all drawings"><span class="icon">🧹</span><span class="label"> Clear Board</span></button>
+        <button id="undoBtn" aria-label="Undo last drawing"><span class="icon">↩️</span><span class="label"> Undo</span></button>
+        <button id="redoBtn" aria-label="Redo last undone drawing"><span class="icon">↪️</span><span class="label"> Redo</span></button>
+        <button onclick="exportAsImage()" aria-label="Export board as image"><span class="icon">📤</span><span class="label"> Export Board</span></button>
+        <button onclick="newBoard()" aria-label="Create new board"><span class="icon">📝</span><span class="label"> New Board</span></button>
+        <button onclick="deleteSelectedBoard()" aria-label="Delete selected board"><span class="icon">🗑️</span><span class="label"> Delete Board</span></button>
+        <button onclick="addMarker()" aria-label="Add marker"><span class="icon">📍</span><span class="label"> Add Marker</span></button>
+      </div>
+    </div>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">☰</button>
+    <div id="currentMapLabel" style="position:fixed;left:100px;top:1rem;z-index:251;color:#0af;font-weight:bold;font-size:1.05rem;text-shadow:0 1px 4px #000;pointer-events:none;">Standoff</div>
+    <div class="map-selector">
+      <select id="sidebarMapSelect" class="map-select" onchange="switchMap(this.value)" aria-label="Select map">
+        <option value="" selected>🗺️</option>
+        <option value="standoff" title="Standoff">Standoff</option>
+        <option value="firing_range" title="Firing Range">Firing Range</option>
+        <option value="coming_soon" disabled title="More Maps Coming Soon...">More Maps Coming Soon...</option>
+      </select>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main>
+      <div class="map-entry" id="standoff">
+        <div class="map-container">
+          <img id="standoffMapImage" src="standoff-clean.png" alt="Standoff Map">
+          <canvas id="standoffDrawingCanvas"></canvas>
+        </div>
+      </div>
+
+      <div class="map-entry" id="firing_range">
+        <div class="map-container">
+          <img id="firingRangeMapImage" src="firing_range_alt.png" alt="Firing Range Map">
+          <canvas id="firingRangeDrawingCanvas"></canvas>
+        </div>
+      </div>
+    </main>
+
+    <!-- Floating Action Button for mobile -->
+    <div class="fab" id="fab">
+      <button class="fab-main" id="fabMainBtn" aria-label="Open actions" tabindex="0" aria-expanded="false">＋</button>
+      <div class="fab-menu" id="fabMenu">
+        <button class="fab-action" id="fabAddMarker">📍 Add Marker</button>
+        <button class="fab-action" id="fabSaveBoard">💾 Save Board</button>
+        <button class="fab-action" id="fabExportBoard">📤 Export Board</button>
+        <button class="fab-action" id="fabClearBoard">🧹 Clear Board</button>
+        <button class="fab-action" id="fabUndo">↩️ Undo</button>
+        <button class="fab-action" id="fabRedo">↪️ Redo</button>
+      </div>
+    </div>
+
+    <footer>
+      <p>Fan-made. Not affiliated with Activision. All rights belong to their respective owners.</p>
+    </footer>
+  </div>
+
+  <script>
+    // Global variables
+    let canvas, ctx, mapImg;
+    let isDrawing = false;
+    let currentDrawing = null;
+    let markers = [];
+    let currentMap = 'standoff';
+
+    // Drawing state per map
+    const mapDrawings = {
+      standoff: { drawings: [], undone: [] },
+      firing_range: { drawings: [], undone: [] }
+    };
+
+    // Markers state per map
+    const mapMarkers = {
+      standoff: [],
+      firing_range: []
+    };
+
+    // Helper to get current map's drawing state
+    function getCurrentDrawingState() {
+      return mapDrawings[currentMap];
+    }
+
+    // Helper to get current map's markers array
+    function getCurrentMarkers() {
+      return mapMarkers[currentMap];
+    }
+
+    // Save board function
+    function saveBoard() {
+      const boardName = document.getElementById('boardName').value;
+      if (!boardName) {
+        alert('Please enter a board name');
+        return;
+      }
+      const activeMap = document.querySelector('.map-entry:not([style*="display: none"])');
+      const mapId = activeMap.id;
+      const canvas = activeMap.querySelector('canvas');
+      const boardData = {
+        mapId: mapId,
+        drawing: canvas.toDataURL(),
+        markers: mapMarkers[mapId]
+      };
+      const savedBoards = JSON.parse(localStorage.getItem('savedBoards') || '{}');
+      savedBoards[boardName] = boardData;
+      localStorage.setItem('savedBoards', JSON.stringify(savedBoards));
+      document.getElementById('boardName').value = '';
+      updateBoardList();
+    }
+
+    // Redraw function for the active canvas
+    function redraw() {
+      const canvas = getActiveCanvas();
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = 'rgba(0, 170, 255, 1)';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      const { drawings } = getCurrentDrawingState();
+      drawings.forEach(path => {
+        if (path.length > 0) {
+          ctx.beginPath();
+          ctx.moveTo(path[0].x, path[0].y);
+          for (let i = 1; i < path.length; i++) {
+            ctx.lineTo(path[i].x, path[i].y);
+          }
+          ctx.stroke();
+        }
+      });
+    }
+
+    // Drawing event handlers
+    let path = [];
+    function startDrawing(e) {
+      isDrawing = true;
+      const canvas = e.target;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      const rect = canvas.getBoundingClientRect();
+      let x, y;
+      if (e.touches && e.touches.length > 0) {
+        x = (e.touches[0].clientX - rect.left) * (canvas.width / rect.width);
+        y = (e.touches[0].clientY - rect.top) * (canvas.height / rect.height);
+      } else {
+        x = (e.clientX - rect.left) * (canvas.width / rect.width);
+        y = (e.clientY - rect.top) * (canvas.height / rect.height);
+      }
+      path = [{ x, y }];
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+    function draw(e) {
+      if (!isDrawing) return;
+      const canvas = e.target;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      const rect = canvas.getBoundingClientRect();
+      let x, y;
+      if (e.touches && e.touches.length > 0) {
+        x = (e.touches[0].clientX - rect.left) * (canvas.width / rect.width);
+        y = (e.touches[0].clientY - rect.top) * (canvas.height / rect.height);
+      } else {
+        x = (e.clientX - rect.left) * (canvas.width / rect.width);
+        y = (e.clientY - rect.top) * (canvas.height / rect.height);
+      }
+      path.push({ x, y });
+      ctx.lineWidth = 2;
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+    function stopDrawing(e) {
+      if (!isDrawing) return;
+      isDrawing = false;
+      if (path.length > 1) {
+        const { drawings, undone } = getCurrentDrawingState();
+        drawings.push([...path]);
+        undone.length = 0; // Clear redo stack
+      }
+      redraw();
+    }
+
+    // Undo/Redo functions
+    function undoDrawing() {
+      const { drawings, undone } = getCurrentDrawingState();
+      if (drawings.length > 0) {
+        undone.push(drawings.pop());
+        redraw();
+      }
+    }
+    function redoDrawing() {
+      const { drawings, undone } = getCurrentDrawingState();
+      if (undone.length > 0) {
+        drawings.push(undone.pop());
+        redraw();
+      }
+    }
+
+    // Wire up Undo/Redo buttons
+    window.onload = function() {
+        // Hide all maps initially
+        document.querySelectorAll('.map-entry').forEach(entry => {
+            entry.style.display = 'none';
+        });
+        // Show only the Standoff map
+        const standoffMap = document.getElementById('standoff');
+        if (standoffMap) {
+            standoffMap.style.display = 'block';
+        }
+        // Set up canvas for both maps
+        const standoffCanvas = document.getElementById('standoffDrawingCanvas');
+        const firingRangeCanvas = document.getElementById('firingRangeDrawingCanvas');
+        if (standoffCanvas) {
+            setupCanvas(standoffCanvas);
+        }
+        if (firingRangeCanvas) {
+            setupCanvas(firingRangeCanvas);
+        }
+        // Set up the map selector
+        const mapSelector = document.getElementById('sidebarMapSelect');
+        if (mapSelector) {
+            mapSelector.addEventListener('change', function() {
+                switchMap(this.value);
+            });
+        }
+        // Set up save button
+        const saveButton = document.getElementById('saveBoardBtn');
+        if (saveButton) {
+            saveButton.addEventListener('click', saveBoard);
+        }
+        // Wire up Undo/Redo buttons
+        document.getElementById('undoBtn').onclick = undoDrawing;
+        document.getElementById('redoBtn').onclick = redoDrawing;
+        // Load saved boards
+        updateBoardList();
+    };
+
+    function setupCanvas(canvas) {
+        if (!canvas) return;
+        function resizeCanvas() {
+          const parent = canvas.parentElement;
+          const width = parent.offsetWidth;
+          const height = parent.offsetHeight;
+          canvas.width = width;
+          canvas.height = height;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        ctx.strokeStyle = '#0af';
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        // Touch events
+        canvas.addEventListener('touchstart', function(e) { e.preventDefault(); startDrawing(e); }, { passive: false });
+        canvas.addEventListener('touchmove', function(e) { e.preventDefault(); draw(e); }, { passive: false });
+        canvas.addEventListener('touchend', function(e) { e.preventDefault(); stopDrawing(e); }, { passive: false });
+        canvas.addEventListener('touchcancel', function(e) { e.preventDefault(); stopDrawing(e); }, { passive: false });
+    }
+
+    // Update resetCanvas to clear drawings and markers for current map
+    window.resetCanvas = function() {
+      const canvas = getActiveCanvas();
+      if (canvas) {
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      document.querySelectorAll('.text-marker').forEach(m => m.remove());
+      mapMarkers[currentMap] = [];
+      const { drawings, undone } = getCurrentDrawingState();
+      drawings.length = 0;
+      undone.length = 0;
+    };
+
+    // Update switchMap to redraw on map change
+    function switchMap(mapId) {
+      // Hide all maps
+      document.querySelectorAll('.map-entry').forEach(entry => {
+        entry.style.display = 'none';
+      });
+      // Show selected map
+      const selectedMap = document.getElementById(mapId);
+      if (selectedMap) {
+        selectedMap.style.display = 'block';
+      }
+      // Update current map
+      currentMap = mapId;
+      redraw();
+      // Update map label
+      var mapLabel = document.getElementById('currentMapLabel');
+      if (mapLabel) {
+        if (mapId === 'standoff') mapLabel.textContent = 'Standoff';
+        else if (mapId === 'firing_range') mapLabel.textContent = 'Firing Range';
+        else mapLabel.textContent = '';
+      }
+    }
+
+    // Export function
+    function exportAsImage() {
+      const canvas = getActiveCanvas();
+      const mapImg = getActiveMapImg();
+      if (!canvas || !mapImg) {
+        console.error('Canvas or map image not found');
+        return;
+      }
+      // Create a temporary canvas for export
+      const exportCanvas = document.createElement('canvas');
+      const exportCtx = exportCanvas.getContext('2d');
+      exportCanvas.width = mapImg.naturalWidth;
+      exportCanvas.height = mapImg.naturalHeight;
+      exportCtx.drawImage(mapImg, 0, 0, exportCanvas.width, exportCanvas.height);
+      // Draw the visible canvas (routes)
+      exportCtx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
+      // Draw markers
+      const markers = getCurrentMarkers();
+      const mapContainer = canvas.parentElement;
+      markers.forEach(markerData => {
+        // Calculate pixel position
+        const x = markerData.x * exportCanvas.width;
+        const y = markerData.y * exportCanvas.height;
+        // Draw marker background
+        exportCtx.save();
+        exportCtx.font = 'bold 18px Arial';
+        exportCtx.textAlign = 'center';
+        exportCtx.textBaseline = 'middle';
+        exportCtx.fillStyle = 'rgba(0,0,0,0.8)';
+        const text = markerData.text || '';
+        const padding = 10;
+        const metrics = exportCtx.measureText(text);
+        const textWidth = metrics.width;
+        const textHeight = 24;
+        exportCtx.beginPath();
+        exportCtx.roundRect(x - textWidth/2 - padding/2, y - textHeight/2, textWidth + padding, textHeight, 6);
+        exportCtx.fill();
+        // Draw marker text
+        exportCtx.fillStyle = '#fff';
+        exportCtx.fillText(text, x, y);
+        exportCtx.restore();
+      });
+      // Export as PNG
+      const link = document.createElement('a');
+      link.download = 'codm_board.png';
+      link.href = exportCanvas.toDataURL('image/png');
+      link.click();
+    }
+
+    // Global functions
+    window.deleteSelectedBoard = function() {
+      const name = document.getElementById('savedBoards').value;
+      if (!name || !confirm('Delete board: ' + name + '?')) return;
+      localStorage.removeItem('board_' + name);
+      updateBoardList();
+      resetCanvas();
+      document.getElementById('mapTitle').textContent = 'Standoff Tactical Map';
+    };
+
+    window.newBoard = function() {
+      resetCanvas();
+      document.getElementById('mapTitle').textContent = 'Standoff Tactical Map';
+      document.getElementById('savedBoards').value = '';
+    };
+
+    // Add these functions to handle the new buttons
+    function addMarker() {
+      const canvas = getActiveCanvas();
+      const mapContainer = canvas ? canvas.parentElement : null;
+      if (!canvas || !mapContainer) return;
+      const text = prompt('Enter marker text:', 'New Marker');
+      if (!text) return;
+      // Default to center
+      const x = 0.5;
+      const y = 0.5;
+      const marker = createMarker(text, x, y, false);
+      mapContainer.appendChild(marker);
+      getCurrentMarkers().push({ text, x, y });
+    }
+
+    // Refactor sidebar button handlers to always use the active map/canvas/markers
+    function getActiveCanvas() {
+      const activeMap = document.querySelector('.map-entry:not([style*="display: none"])');
+      return activeMap ? activeMap.querySelector('canvas') : null;
+    }
+    function getActiveMapImg() {
+      const activeMap = document.querySelector('.map-entry:not([style*="display: none"])');
+      return activeMap ? activeMap.querySelector('img') : null;
+    }
+    function getActiveMarkers() {
+      return markers;
+    }
+
+    // Board management functions
+    function updateBoardList() {
+      const savedBoards = JSON.parse(localStorage.getItem('savedBoards') || '{}');
+      const select = document.getElementById('savedBoards');
+      select.innerHTML = '<option value="">Select a saved board</option>';
+      
+      Object.keys(savedBoards).forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        select.appendChild(option);
+      });
+    }
+
+    window.loadBoard = function() {
+      const boardName = document.getElementById('savedBoards').value;
+      if (!boardName) return;
+      const savedBoards = JSON.parse(localStorage.getItem('savedBoards') || '{}');
+      const boardData = savedBoards[boardName];
+      if (!boardData) return;
+      switchMap(boardData.mapId);
+      const canvas = document.querySelector(`#${boardData.mapId} canvas`);
+      const img = new Image();
+      img.onload = function() {
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+        currentDrawing = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      };
+      img.src = boardData.drawing;
+      mapMarkers[boardData.mapId] = boardData.markers || [];
+      updateMarkers();
+    };
+
+    // Update updateMarkers to use per-map markers
+    function updateMarkers() {
+      document.querySelectorAll('.text-marker').forEach(m => m.remove());
+      const activeMap = document.querySelector('.map-entry:not([style*="display: none"]) .map-container');
+      if (!activeMap) return;
+      const markers = getCurrentMarkers();
+      markers.forEach(markerData => {
+        const marker = createMarker(markerData.text, markerData.x, markerData.y, true);
+        activeMap.appendChild(marker);
+      });
+    }
+
+    // Improved createMarker function
+    function createMarker(text, x, y, isRestoring) {
+      const marker = document.createElement('div');
+      marker.className = 'text-marker';
+      marker.textContent = text;
+      marker.style.left = (x * 100) + '%';
+      marker.style.top = (y * 100) + '%';
+      marker.draggable = true;
+      marker.tabIndex = 0;
+      marker.setAttribute('aria-label', `Tactical marker: ${text}`);
+      // Drag logic (mouse)
+      marker.addEventListener('dragstart', function(e) {
+        e.dataTransfer.setData('text/plain', '');
+        this.style.opacity = '0.5';
+        marker._dragStartX = e.clientX;
+        marker._dragStartY = e.clientY;
+        marker._origLeft = parseFloat(marker.style.left);
+        marker._origTop = parseFloat(marker.style.top);
+      });
+      marker.addEventListener('dragend', function(e) {
+        this.style.opacity = '1';
+        const mapContainer = marker.parentElement;
+        const rect = mapContainer.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
+        this.style.left = (x * 100) + '%';
+        this.style.top = (y * 100) + '%';
+        // Update marker in array
+        const markers = getCurrentMarkers();
+        const idx = Array.from(mapContainer.querySelectorAll('.text-marker')).indexOf(marker);
+        if (markers[idx]) {
+          markers[idx].x = x;
+          markers[idx].y = y;
+        }
+      });
+      // Touch drag logic
+      let touchDragging = false;
+      let touchStartX, touchStartY, origLeft, origTop;
+      marker.addEventListener('touchstart', function(e) {
+        if (e.touches.length !== 1) return;
+        touchDragging = true;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        origLeft = parseFloat(marker.style.left);
+        origTop = parseFloat(marker.style.top);
+        marker.style.opacity = '0.5';
+      }, { passive: false });
+      marker.addEventListener('touchmove', function(e) {
+        if (!touchDragging || e.touches.length !== 1) return;
+        e.preventDefault();
+        const mapContainer = marker.parentElement;
+        const rect = mapContainer.getBoundingClientRect();
+        const dx = e.touches[0].clientX - touchStartX;
+        const dy = e.touches[0].clientY - touchStartY;
+        // Convert px to %
+        const newLeft = ((origLeft / 100) * rect.width + dx) / rect.width * 100;
+        const newTop = ((origTop / 100) * rect.height + dy) / rect.height * 100;
+        marker.style.left = newLeft + '%';
+        marker.style.top = newTop + '%';
+      }, { passive: false });
+      marker.addEventListener('touchend', function(e) {
+        if (!touchDragging) return;
+        touchDragging = false;
+        marker.style.opacity = '1';
+        const mapContainer = marker.parentElement;
+        const rect = mapContainer.getBoundingClientRect();
+        const left = parseFloat(marker.style.left) / 100;
+        const top = parseFloat(marker.style.top) / 100;
+        // Update marker in array
+        const markers = getCurrentMarkers();
+        const idx = Array.from(mapContainer.querySelectorAll('.text-marker')).indexOf(marker);
+        if (markers[idx]) {
+          markers[idx].x = left;
+          markers[idx].y = top;
+        }
+      }, { passive: false });
+      // Double-click to edit
+      marker.addEventListener('dblclick', function() {
+        const newText = prompt('Edit marker text:', marker.textContent);
+        if (newText) {
+          marker.textContent = newText;
+          marker.setAttribute('aria-label', `Tactical marker: ${newText}`);
+          // Update marker in array
+          const mapContainer = marker.parentElement;
+          const markers = getCurrentMarkers();
+          const idx = Array.from(mapContainer.querySelectorAll('.text-marker')).indexOf(marker);
+          if (markers[idx]) {
+            markers[idx].text = newText;
+          }
+        }
+      });
+      // Right-click to delete
+      marker.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        const mapContainer = marker.parentElement;
+        const markers = getCurrentMarkers();
+        const idx = Array.from(mapContainer.querySelectorAll('.text-marker')).indexOf(marker);
+        if (idx > -1) {
+          markers.splice(idx, 1);
+        }
+        marker.remove();
+      });
+      return marker;
+    }
+
+    // Keyboard shortcuts for Undo/Redo
+    document.addEventListener('keydown', function(e) {
+      // Ignore if focused on input or textarea
+      const tag = document.activeElement.tagName.toLowerCase();
+      if (tag === 'input' || tag === 'textarea') return;
+      // Undo: Ctrl+Z or Cmd+Z
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        undoDrawing();
+      }
+      // Redo: Ctrl+Y or Ctrl+Shift+Z or Cmd+Shift+Z
+      if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) {
+        e.preventDefault();
+        redoDrawing();
+      }
+    });
+
+    // Sidebar toggle for mobile
+    document.addEventListener('DOMContentLoaded', function() {
+      var mapSelect = document.getElementById('sidebarMapSelect');
+      if (mapSelect) mapSelect.selectedIndex = 0;
+      const sidebar = document.querySelector('.sidebar');
+      const toggleBtn = document.getElementById('sidebarToggle');
+      const overlay = document.getElementById('sidebarOverlay');
+      function closeSidebar() {
+        sidebar.classList.remove('open');
+        overlay.style.display = 'none';
+      }
+      function openSidebar() {
+        sidebar.classList.add('open');
+        overlay.style.display = 'block';
+      }
+      if (toggleBtn && sidebar && overlay) {
+        toggleBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          openSidebar();
+        });
+        overlay.addEventListener('click', function() {
+          closeSidebar();
+        });
+      }
+      function setSidebarInitialState() {
+        if (window.innerWidth <= 768) {
+          closeSidebar(); // Always closed on mobile by default
+        } else {
+          openSidebar();  // Always open on desktop
+        }
+      }
+      setSidebarInitialState();
+      window.addEventListener('resize', setSidebarInitialState);
+    });
+
+    // FAB logic for mobile
+    function isMobile() {
+      return window.innerWidth <= 768;
+    }
+    function closeFabMenu() {
+      document.getElementById('fab').classList.remove('open');
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      // ... existing sidebar toggle ...
+      // FAB setup
+      const fab = document.getElementById('fab');
+      const fabMainBtn = document.getElementById('fabMainBtn');
+      const fabMenu = document.getElementById('fabMenu');
+      if (fab && fabMainBtn && fabMenu) {
+        fabMainBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const isOpen = fab.classList.toggle('open');
+          fabMainBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+        // Close FAB menu when clicking outside
+        document.addEventListener('click', function(e) {
+          if (isMobile() && fab.classList.contains('open') && !fab.contains(e.target)) {
+            closeFabMenu();
+          }
+        });
+        // FAB actions
+        document.getElementById('fabAddMarker').onclick = function() { addMarker(); closeFabMenu(); };
+        document.getElementById('fabSaveBoard').onclick = function() { saveBoard(); closeFabMenu(); };
+        document.getElementById('fabExportBoard').onclick = function() { exportAsImage(); closeFabMenu(); };
+        document.getElementById('fabClearBoard').onclick = function() { resetCanvas(); closeFabMenu(); };
+        document.getElementById('fabUndo').onclick = function() { undoDrawing(); closeFabMenu(); };
+        document.getElementById('fabRedo').onclick = function() { redoDrawing(); closeFabMenu(); };
+      }
+    });
+  </script>
+</body>
+</html>
