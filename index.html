@@ -495,6 +495,9 @@
         <option value="" selected>🗺️</option>
         <option value="standoff" title="Standoff">Standoff</option>
         <option value="firing_range" title="Firing Range">Firing Range</option>
+        <option value="zoo" title="Zoo">Zoo</option>
+        <option value="terminal" title="Terminal">Terminal</option>
+        <option value="tunisia" title="Tunisia">Tunisia</option>
         <option value="coming_soon" disabled title="More Maps Coming Soon...">More Maps Coming Soon...</option>
       </select>
     </div>
@@ -512,6 +515,27 @@
         <div class="map-container">
           <img id="firingRangeMapImage" src="firing_range_alt.png" alt="Firing Range Map">
           <canvas id="firingRangeDrawingCanvas"></canvas>
+        </div>
+      </div>
+
+      <div class="map-entry" id="zoo" style="display:none;">
+        <div class="map-container">
+          <img id="zooMapImage" src="Zoo.png" alt="Zoo Map">
+          <canvas id="zooDrawingCanvas"></canvas>
+        </div>
+      </div>
+
+      <div class="map-entry" id="terminal" style="display:none;">
+        <div class="map-container">
+          <img id="terminalMapImage" src="terminal.png" alt="Terminal Map">
+          <canvas id="terminalDrawingCanvas"></canvas>
+        </div>
+      </div>
+
+      <div class="map-entry" id="tunisia" style="display:none;">
+        <div class="map-container">
+          <img id="tunisiaMapImage" src="tunisia.png" alt="Tunisia Map">
+          <canvas id="tunisiaDrawingCanvas"></canvas>
         </div>
       </div>
     </main>
@@ -545,13 +569,19 @@
     // Drawing state per map
     const mapDrawings = {
       standoff: { drawings: [], undone: [] },
-      firing_range: { drawings: [], undone: [] }
+      firing_range: { drawings: [], undone: [] },
+      zoo: { drawings: [], undone: [] },
+      terminal: { drawings: [], undone: [] },
+      tunisia: { drawings: [], undone: [] }
     };
 
     // Markers state per map
     const mapMarkers = {
       standoff: [],
-      firing_range: []
+      firing_range: [],
+      zoo: [],
+      terminal: [],
+      tunisia: []
     };
 
     // Helper to get current map's drawing state
@@ -684,14 +714,26 @@
         if (standoffMap) {
             standoffMap.style.display = 'block';
         }
-        // Set up canvas for both maps
+        // Set up canvas for all maps
         const standoffCanvas = document.getElementById('standoffDrawingCanvas');
         const firingRangeCanvas = document.getElementById('firingRangeDrawingCanvas');
+        const zooCanvas = document.getElementById('zooDrawingCanvas');
+        const terminalCanvas = document.getElementById('terminalDrawingCanvas');
+        const tunisiaCanvas = document.getElementById('tunisiaDrawingCanvas');
         if (standoffCanvas) {
             setupCanvas(standoffCanvas);
         }
         if (firingRangeCanvas) {
             setupCanvas(firingRangeCanvas);
+        }
+        if (zooCanvas) {
+            setupCanvas(zooCanvas);
+        }
+        if (terminalCanvas) {
+            setupCanvas(terminalCanvas);
+        }
+        if (tunisiaCanvas) {
+            setupCanvas(tunisiaCanvas);
         }
         // Set up the map selector
         const mapSelector = document.getElementById('sidebarMapSelect');
@@ -875,6 +917,9 @@
       if (mapLabel) {
         if (mapId === 'standoff') mapLabel.textContent = 'Standoff';
         else if (mapId === 'firing_range') mapLabel.textContent = 'Firing Range';
+        else if (mapId === 'zoo') mapLabel.textContent = 'Zoo';
+        else if (mapId === 'terminal') mapLabel.textContent = 'Terminal';
+        else if (mapId === 'tunisia') mapLabel.textContent = 'Tunisia';
         else mapLabel.textContent = '';
       }
     }

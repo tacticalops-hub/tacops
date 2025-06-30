@@ -191,4 +191,6 @@ canvas:focus {
   border-radius: 5px;
   margin-top: 10px;
   border: 1px solid #0af;
-} 
+}
+
+/* No changes needed if .map-entry and .map-container styles are generic. If there are map-specific styles, add for #zoo and #zooDrawingCanvas. */ 
