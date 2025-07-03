@@ -1,47 +1,45 @@
 const CACHE_NAME = 'codm-maps-v1.0.0';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/script.js',
-  '/styles.css',
-  '/manifest.json',
+  './',
+  './index.html',
+  './manifest.json',
   // Map images
-  '/standoff-clean.png',
-  '/firing_range_alt.png',
-  '/zoo.png',
-  '/terminal.png',
-  '/tunisia.png',
-  '/monastery.png',
-  '/oasis.png',
-  '/rust.png',
-  '/hacienda.png',
-  '/highrise.png',
-  '/icebreaker.png',
-  '/takeoff.png',
-  '/vacant.png',
-  '/hackney_yard.png',
-  '/hovec_sawmill.png',
-  '/shipment.png',
-  '/scrapyard_2019.png',
-  '/suldal_harbor.png',
-  '/dome.png',
-  '/slums.png',
-  '/nuketown_russia.png',
-  '/meltdown.png',
-  '/summit.png',
-  '/hijacked.png',
-  '/crash.png',
-  '/crossfire.png',
-  '/raid.png',
-  '/nuketown.png',
-  '/killhouse.png',
-  '/hardhat.png',
-  '/saloon.png',
-  '/pine.png',
-  '/king.png',
-  '/docks.png',
-  '/shoot_house.png',
-  '/cage.png'
+  './standoff-clean.png',
+  './firing_range_alt.png',
+  './zoo.png',
+  './terminal.png',
+  './tunisia.png',
+  './monastery.png',
+  './oasis.png',
+  './rust.png',
+  './hacienda.png',
+  './highrise.png',
+  './icebreaker.png',
+  './takeoff.png',
+  './vacant.png',
+  './hackney_yard.png',
+  './hovec_sawmill.png',
+  './shipment.png',
+  './scrapyard_2019.png',
+  './suldal_harbor.png',
+  './dome.png',
+  './slums.png',
+  './nuketown_russia.png',
+  './meltdown.png',
+  './summit.png',
+  './hijacked.png',
+  './crash.png',
+  './crossfire.png',
+  './raid.png',
+  './nuketown.png',
+  './killhouse.png',
+  './hardhat.png',
+  './saloon.png',
+  './pine.png',
+  './king.png',
+  './docks.png',
+  './shoot_house.png',
+  './cage.png'
 ];
 
 // Install event - cache resources
@@ -88,7 +86,7 @@ self.addEventListener('fetch', event => {
       .catch(() => {
         // If both cache and network fail, return a fallback
         if (event.request.destination === 'image') {
-          return caches.match('/standoff-clean.png');
+          return caches.match('./standoff-clean.png');
         }
       })
   );
@@ -126,8 +124,8 @@ function doBackgroundSync() {
 self.addEventListener('push', event => {
   const options = {
     body: event.data ? event.data.text() : 'New CODM map update available!',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-72x72.png',
+    icon: './icons/icon-192x192.png',
+    badge: './icons/icon-72x72.png',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
@@ -137,12 +135,12 @@ self.addEventListener('push', event => {
       {
         action: 'explore',
         title: 'Open App',
-        icon: '/icons/icon-96x96.png'
+        icon: './icons/icon-96x96.png'
       },
       {
         action: 'close',
         title: 'Close',
-        icon: '/icons/icon-96x96.png'
+        icon: './icons/icon-96x96.png'
       }
     ]
   };
@@ -158,7 +156,7 @@ self.addEventListener('notificationclick', event => {
 
   if (event.action === 'explore') {
     event.waitUntil(
-      clients.openWindow('/')
+      clients.openWindow('./')
     );
   }
 }); 
