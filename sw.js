@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codm-maps-v1.0.0';
+const CACHE_NAME = 'codm-maps-v1.0.2';
 const urlsToCache = [
   '/tacops/',
   '/tacops/index.html',
