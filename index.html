@@ -4,6 +4,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CODM Tactical Map Guides</title>
+  
+  <!-- PWA Meta Tags -->
+  <meta name="description" content="Interactive tactical map guides for Call of Duty Mobile with drawing tools and route planning">
+  <meta name="theme-color" content="#00aaff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CODM Maps">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- PWA Icons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-72x72.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-72x72.png">
+  <link rel="apple-touch-icon" href="icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192x192.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-152x152.png">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-B99CVFWBGB"></script>
   <script>
@@ -494,10 +512,17 @@
         <button onclick="newBoard()" aria-label="Create new board"><span class="icon">📝</span><span class="label"> New Board</span></button>
         <button onclick="deleteSelectedBoard()" aria-label="Delete selected board"><span class="icon">🗑️</span><span class="label"> Delete Board</span></button>
         <button onclick="addMarker()" aria-label="Add marker"><span class="icon">📍</span><span class="label"> Add Marker</span></button>
+        <button id="installBtn" onclick="installApp()" aria-label="Install app" style="display: none;"><span class="icon">📱</span><span class="label"> Install App</span></button>
       </div>
     </div>
     <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">☰</button>
     <div id="currentMapLabel" style="position:fixed;left:100px;top:1rem;z-index:251;color:#0af;font-weight:bold;font-size:1.05rem;text-shadow:0 1px 4px #000;pointer-events:none;">Standoff</div>
+    <div id="offlineIndicator" style="position:fixed;right:1rem;top:1rem;z-index:252;background:#ff4444;color:#fff;padding:0.5rem;border-radius:4px;font-size:0.8rem;display:none;">Offline</div>
+    <div id="installBanner" style="position:fixed;top:0;left:0;right:0;background:#0af;color:#000;padding:0.8rem;text-align:center;z-index:300;display:none;box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+      <span style="font-weight:bold;">📱 Install CODM Maps for the best experience!</span>
+      <button onclick="installApp()" style="margin-left:1rem;background:#000;color:#0af;border:none;padding:0.5rem 1rem;border-radius:4px;font-weight:bold;cursor:pointer;">Install Now</button>
+      <button onclick="hideInstallBanner()" style="margin-left:0.5rem;background:transparent;color:#000;border:1px solid #000;padding:0.5rem 1rem;border-radius:4px;cursor:pointer;">Not Now</button>
+    </div>
     <div class="map-selector">
       <select id="sidebarMapSelect" class="map-select" onchange="switchMap(this.value)" aria-label="Select map">
         <option value="" selected>🗺️</option>
@@ -806,6 +831,7 @@
         <button class="fab-action" id="fabClearBoard">🧹 Clear Board</button>
         <button class="fab-action" id="fabUndo">↩️ Undo</button>
         <button class="fab-action" id="fabRedo">↪️ Redo</button>
+        <button class="fab-action" id="fabInstall" style="display: none;">📱 Install App</button>
       </div>
     </div>
 
@@ -821,6 +847,94 @@
     let currentDrawing = null;
     let markers = [];
     let currentMap = 'standoff';
+    let deferredPrompt;
+
+    // PWA Installation
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
+      e.preventDefault();
+      // Stash the event so it can be triggered later
+      deferredPrompt = e;
+      // Show install button if it exists
+      showInstallButton();
+    });
+
+    function showInstallButton() {
+      // Show install button in sidebar
+      const installBtn = document.getElementById('installBtn');
+      if (installBtn) {
+        installBtn.style.display = 'block';
+      }
+      
+      // Show install button in FAB menu for mobile
+      const fabInstall = document.getElementById('fabInstall');
+      if (fabInstall) {
+        fabInstall.style.display = 'block';
+      }
+      
+      // Show install banner
+      const installBanner = document.getElementById('installBanner');
+      if (installBanner) {
+        installBanner.style.display = 'block';
+      }
+      
+      console.log('App can be installed');
+    }
+
+    function hideInstallBanner() {
+      const installBanner = document.getElementById('installBanner');
+      if (installBanner) {
+        installBanner.style.display = 'none';
+      }
+    }
+
+    function installApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+            hideInstallBanner();
+          } else {
+            console.log('User dismissed the install prompt');
+          }
+          deferredPrompt = null;
+        });
+      }
+    }
+
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('SW registered: ', registration);
+          })
+          .catch((registrationError) => {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+
+    // Handle app installed event
+    window.addEventListener('appinstalled', (evt) => {
+      console.log('App was installed');
+    });
+
+    // Handle online/offline status
+    window.addEventListener('online', () => {
+      const indicator = document.getElementById('offlineIndicator');
+      if (indicator) {
+        indicator.style.display = 'none';
+      }
+    });
+
+    window.addEventListener('offline', () => {
+      const indicator = document.getElementById('offlineIndicator');
+      if (indicator) {
+        indicator.style.display = 'block';
+      }
+    });
 
     // Drawing state per map
     const mapDrawings = {
@@ -1191,11 +1305,26 @@
         if (saveButton) {
             saveButton.addEventListener('click', saveBoard);
         }
-        // Wire up Undo/Redo buttons
-        document.getElementById('undoBtn').onclick = undoDrawing;
-        document.getElementById('redoBtn').onclick = redoDrawing;
-        // Load saved boards
-        updateBoardList();
+            // Wire up Undo/Redo buttons
+    document.getElementById('undoBtn').onclick = undoDrawing;
+    document.getElementById('redoBtn').onclick = redoDrawing;
+    // Load saved boards
+    updateBoardList();
+    
+    // Handle URL parameters for PWA shortcuts
+    const urlParams = new URLSearchParams(window.location.search);
+    const mapParam = urlParams.get('map');
+    if (mapParam && mapParam !== 'standoff') {
+      // Switch to the specified map
+      setTimeout(() => {
+        switchMap(mapParam);
+        // Update the select dropdown
+        const mapSelect = document.getElementById('sidebarMapSelect');
+        if (mapSelect) {
+          mapSelect.value = mapParam;
+        }
+      }, 100);
+    }
     };
 
     function setupCanvas(canvas) {
@@ -1759,6 +1888,7 @@
         document.getElementById('fabClearBoard').onclick = function() { resetCanvas(); closeFabMenu(); };
         document.getElementById('fabUndo').onclick = function() { undoDrawing(); closeFabMenu(); };
         document.getElementById('fabRedo').onclick = function() { redoDrawing(); closeFabMenu(); };
+        document.getElementById('fabInstall').onclick = function() { installApp(); closeFabMenu(); };
       }
     });
   </script>
