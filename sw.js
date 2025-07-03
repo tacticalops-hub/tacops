@@ -1,45 +1,45 @@
 const CACHE_NAME = 'codm-maps-v1.0.0';
 const urlsToCache = [
-  './',
-  './index.html',
-  './manifest.json',
+  '/tacops/',
+  '/tacops/index.html',
+  '/tacops/manifest.json',
   // Map images
-  './standoff-clean.png',
-  './firing_range_alt.png',
-  './zoo.png',
-  './terminal.png',
-  './tunisia.png',
-  './monastery.png',
-  './oasis.png',
-  './rust.png',
-  './hacienda.png',
-  './highrise.png',
-  './icebreaker.png',
-  './takeoff.png',
-  './vacant.png',
-  './hackney_yard.png',
-  './hovec_sawmill.png',
-  './shipment.png',
-  './scrapyard_2019.png',
-  './suldal_harbor.png',
-  './dome.png',
-  './slums.png',
-  './nuketown_russia.png',
-  './meltdown.png',
-  './summit.png',
-  './hijacked.png',
-  './crash.png',
-  './crossfire.png',
-  './raid.png',
-  './nuketown.png',
-  './killhouse.png',
-  './hardhat.png',
-  './saloon.png',
-  './pine.png',
-  './king.png',
-  './docks.png',
-  './shoot_house.png',
-  './cage.png'
+  '/tacops/standoff-clean.png',
+  '/tacops/firing_range_alt.png',
+  '/tacops/zoo.png',
+  '/tacops/terminal.png',
+  '/tacops/tunisia.png',
+  '/tacops/monastery.png',
+  '/tacops/oasis.png',
+  '/tacops/rust.png',
+  '/tacops/hacienda.png',
+  '/tacops/highrise.png',
+  '/tacops/icebreaker.png',
+  '/tacops/takeoff.png',
+  '/tacops/vacant.png',
+  '/tacops/hackney_yard.png',
+  '/tacops/hovec_sawmill.png',
+  '/tacops/shipment.png',
+  '/tacops/scrapyard_2019.png',
+  '/tacops/suldal_harbor.png',
+  '/tacops/dome.png',
+  '/tacops/slums.png',
+  '/tacops/nuketown_russia.png',
+  '/tacops/meltdown.png',
+  '/tacops/summit.png',
+  '/tacops/hijacked.png',
+  '/tacops/crash.png',
+  '/tacops/crossfire.png',
+  '/tacops/raid.png',
+  '/tacops/nuketown.png',
+  '/tacops/killhouse.png',
+  '/tacops/hardhat.png',
+  '/tacops/saloon.png',
+  '/tacops/pine.png',
+  '/tacops/king.png',
+  '/tacops/docks.png',
+  '/tacops/shoot_house.png',
+  '/tacops/cage.png'
 ];
 
 // Install event - cache resources
@@ -86,7 +86,7 @@ self.addEventListener('fetch', event => {
       .catch(() => {
         // If both cache and network fail, return a fallback
         if (event.request.destination === 'image') {
-          return caches.match('./standoff-clean.png');
+          return caches.match('/tacops/standoff-clean.png');
         }
       })
   );
@@ -124,8 +124,8 @@ function doBackgroundSync() {
 self.addEventListener('push', event => {
   const options = {
     body: event.data ? event.data.text() : 'New CODM map update available!',
-    icon: './icons/icon-192x192.png',
-    badge: './icons/icon-72x72.png',
+    icon: '/tacops/icons/icon-192x192.png',
+    badge: '/tacops/icons/icon-72x72.png',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
@@ -135,12 +135,12 @@ self.addEventListener('push', event => {
       {
         action: 'explore',
         title: 'Open App',
-        icon: './icons/icon-96x96.png'
+        icon: '/tacops/icons/icon-96x96.png'
       },
       {
         action: 'close',
         title: 'Close',
-        icon: './icons/icon-96x96.png'
+        icon: '/tacops/icons/icon-96x96.png'
       }
     ]
   };
@@ -156,7 +156,7 @@ self.addEventListener('notificationclick', event => {
 
   if (event.action === 'explore') {
     event.waitUntil(
-      clients.openWindow('./')
+      clients.openWindow('/tacops/')
     );
   }
 }); 

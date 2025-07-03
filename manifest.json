@@ -2,12 +2,12 @@
   "name": "CODM Tactical Map Guides",
   "short_name": "CODM Maps",
   "description": "Interactive tactical map guides for Call of Duty Mobile with drawing tools and route planning",
-  "start_url": "./",
+  "start_url": "/tacops/",
   "display": "standalone",
   "background_color": "#111111",
   "theme_color": "#00aaff",
   "orientation": "portrait-primary",
-  "scope": "./",
+  "scope": "/tacops/",
   "lang": "en",
   "categories": ["games", "utilities"],
   "icons": [
@@ -65,7 +65,7 @@
       "name": "Standoff Map",
       "short_name": "Standoff",
       "description": "Open Standoff map",
-      "url": "./?map=standoff",
+      "url": "/tacops/?map=standoff",
       "icons": [
         {
           "src": "icons/icon-96x96.png",
@@ -77,7 +77,7 @@
       "name": "Firing Range Map",
       "short_name": "Firing Range",
       "description": "Open Firing Range map",
-      "url": "./?map=firing_range",
+      "url": "/tacops/?map=firing_range",
       "icons": [
         {
           "src": "icons/icon-96x96.png",
