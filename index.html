@@ -1154,6 +1154,8 @@
           ctx.stroke();
         }
       });
+      // Draw bomb sites and spawns overlays
+      drawSitesAndSpawns();
     }
 
     // Drawing event handlers
@@ -2087,6 +2089,80 @@
         };
       }
     });
+
+    // 1. Hardcoded bomb sites and spawns for 'standoff'
+    const mapSitesAndSpawns = {
+      standoff: {
+        bombSites: [
+          { type: "A", x: 0.209, y: 0.425 },
+          { type: "B", x: 0.409, y: 0.587 }
+        ],
+        spawns: [
+          { type: "attacker", x: 0.649, y: 0.207 },
+          { type: "defender", x: 0.209, y: 0.768 }
+        ]
+      }
+      // Add more maps as needed
+    };
+
+    // 2. Draw bomb sites and spawns on the canvas
+    function drawSitesAndSpawns() {
+      const canvas = getActiveCanvas();
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const mapData = mapSitesAndSpawns[currentMap];
+      if (!mapData) return;
+
+      // Bomb Sites
+      mapData.bombSites.forEach(site => {
+        const x = site.x * canvas.width;
+        const y = site.y * canvas.height;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x, y, 18, 0, 2 * Math.PI);
+        ctx.fillStyle = site.type === "A" ? "#e53935" : "#1976d2";
+        ctx.fill();
+        ctx.font = "bold 18px Arial";
+        ctx.fillStyle = "#fff";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(site.type, x, y);
+        ctx.restore();
+      });
+
+      // Spawns
+      mapData.spawns.forEach(spawn => {
+        const x = spawn.x * canvas.width;
+        const y = spawn.y * canvas.height;
+        ctx.save();
+        // Use compact label
+        const label = spawn.type === "attacker" ? "Atk" : "Def";
+        ctx.font = "bold 13px Arial";
+        const rectWidth = 40;
+        const rectHeight = 22;
+        const radius = 6;
+        // Draw smaller rounded rectangle
+        ctx.beginPath();
+        ctx.moveTo(x - rectWidth/2 + radius, y - rectHeight/2);
+        ctx.lineTo(x + rectWidth/2 - radius, y - rectHeight/2);
+        ctx.quadraticCurveTo(x + rectWidth/2, y - rectHeight/2, x + rectWidth/2, y - rectHeight/2 + radius);
+        ctx.lineTo(x + rectWidth/2, y + rectHeight/2 - radius);
+        ctx.quadraticCurveTo(x + rectWidth/2, y + rectHeight/2, x + rectWidth/2 - radius, y + rectHeight/2);
+        ctx.lineTo(x - rectWidth/2 + radius, y + rectHeight/2);
+        ctx.quadraticCurveTo(x - rectWidth/2, y + rectHeight/2, x - rectWidth/2, y + rectHeight/2 - radius);
+        ctx.lineTo(x - rectWidth/2, y - rectHeight/2 + radius);
+        ctx.quadraticCurveTo(x - rectWidth/2, y - rectHeight/2, x - rectWidth/2 + radius, y - rectHeight/2);
+        ctx.closePath();
+        ctx.fillStyle = spawn.type === "attacker" ? "#ff9800" : "#43a047";
+        ctx.fill();
+        // Draw text
+        ctx.fillStyle = "#fff";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(label, x, y);
+        ctx.restore();
+      });
+    }
   </script>
 
   <!-- On DOMContentLoaded, visually indicate the default selected marker color -->
