@@ -1,49 +1,50 @@
-const CACHE_NAME = 'codm-maps-v1.0.2';
+const CACHE_NAME = 'codm-maps-v1.0.3';
 const urlsToCache = [
-  '/tacops/',
-  '/tacops/index.html',
-  '/tacops/manifest.json',
+  '/',
+  '/index.html',
+  '/manifest.json',
   // Map images
-  '/tacops/standoff-clean.png',
-  '/tacops/firing_range_alt.png',
-  '/tacops/zoo.png',
-  '/tacops/terminal.png',
-  '/tacops/tunisia.png',
-  '/tacops/monastery.png',
-  '/tacops/oasis.png',
-  '/tacops/rust.png',
-  '/tacops/hacienda.png',
-  '/tacops/highrise.png',
-  '/tacops/icebreaker.png',
-  '/tacops/takeoff.png',
-  '/tacops/vacant.png',
-  '/tacops/hackney_yard.png',
-  '/tacops/hovec_sawmill.png',
-  '/tacops/shipment.png',
-  '/tacops/scrapyard_2019.png',
-  '/tacops/suldal_harbor.png',
-  '/tacops/dome.png',
-  '/tacops/slums.png',
-  '/tacops/nuketown_russia.png',
-  '/tacops/meltdown.png',
-  '/tacops/summit.png',
-  '/tacops/hijacked.png',
-  '/tacops/crash.png',
-  '/tacops/crossfire.png',
-  '/tacops/raid.png',
-  '/tacops/nuketown.png',
-  '/tacops/killhouse.png',
-  '/tacops/hardhat.png',
-  '/tacops/saloon.png',
-  '/tacops/pine.png',
-  '/tacops/king.png',
-  '/tacops/docks.png',
-  '/tacops/shoot_house.png',
-  '/tacops/cage.png'
+  '/standoff-clean.png',
+  '/firing_range_alt.png',
+  '/zoo.png',
+  '/terminal.png',
+  '/tunisia.png',
+  '/monastery.png',
+  '/oasis.png',
+  '/rust.png',
+  '/hacienda.png',
+  '/highrise.png',
+  '/icebreaker.png',
+  '/takeoff.png',
+  '/vacant.png',
+  '/hackney_yard.png',
+  '/hovec_sawmill.png',
+  '/shipment.png',
+  '/scrapyard_2019.png',
+  '/suldal_harbor.png',
+  '/dome.png',
+  '/slums.png',
+  '/nuketown_russia.png',
+  '/meltdown.png',
+  '/summit.png',
+  '/hijacked.png',
+  '/crash.png',
+  '/crossfire.png',
+  '/raid.png',
+  '/nuketown.png',
+  '/killhouse.png',
+  '/hardhat.png',
+  '/saloon.png',
+  '/pine.png',
+  '/king.png',
+  '/docks.png',
+  '/shoot_house.png',
+  '/cage.png'
 ];
 
 // Install event - cache resources
 self.addEventListener('install', event => {
+  self.skipWaiting(); // Force SW to activate immediately
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
@@ -86,7 +87,7 @@ self.addEventListener('fetch', event => {
       .catch(() => {
         // If both cache and network fail, return a fallback
         if (event.request.destination === 'image') {
-          return caches.match('/tacops/standoff-clean.png');
+          return caches.match('/standoff-clean.png');
         }
       })
   );
@@ -106,6 +107,7 @@ self.addEventListener('activate', event => {
       );
     })
   );
+  self.clients.claim(); // Take control of all clients immediately
 });
 
 // Handle background sync for offline actions

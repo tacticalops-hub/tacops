@@ -58,6 +58,8 @@
       z-index: 100;
       transition: transform 0.3s ease;
       transform: translateX(0);
+      overflow-y: auto !important;
+      max-height: 100vh !important;
     }
 
     .sidebar h2 {
@@ -68,37 +70,38 @@
     }
 
     .map-selector {
-      position: fixed;
-      top: 3.2rem;
-      left: 100px;
-      width: 110px !important;
-      min-width: 0 !important;
-      max-width: 40vw !important;
-      z-index: 250;
+      width: 220px;
       background: #181c24;
       border-radius: 12px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.18);
-      padding: 0.2rem 0.3rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid #222;
-      transition: left 0.3s cubic-bezier(.4,0,.2,1);
+      padding: 0.7rem 0.7rem 1.1rem 0.7rem;
+      margin-bottom: 1.5rem;
+      border: 2px solid #0af;
+      position: static;
+      left: unset;
+      top: unset;
+      z-index: 1;
+      display: block;
       box-sizing: border-box;
     }
 
+    .map-selector label {
+      color: #0af;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      font-size: 1.05rem;
+      display: block;
+      text-align: left;
+    }
+
     .map-selector select {
-      width: 2.2em;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-      font-size: 0.9rem;
-      text-align: center;
+      width: 100%;
+      font-size: 1.1rem;
+      padding: 0.6rem 0.5rem;
+      border-radius: 10px;
       background: #232a36;
       color: #0af;
-      border: none;
-      border-radius: 8px;
-      padding: 0.2rem 0.3rem;
+      border: 1.5px solid #0af;
       font-family: inherit;
       font-weight: bold;
       letter-spacing: 0.5px;
@@ -106,12 +109,14 @@
       outline: none;
       transition: background 0.2s, color 0.2s;
       box-sizing: border-box;
+      margin-bottom: 0;
+      margin-top: 0;
     }
 
-    .map-selector option {
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
+    .map-selector select:focus {
+      background: #1a2330;
+      color: #fff;
+      border: 2px solid #0af;
     }
 
     .whiteboard-controls {
@@ -324,6 +329,8 @@
         transform: translateX(-100%) !important;
         transition: transform 0.3s cubic-bezier(.4,0,.2,1);
         padding: 1.5rem !important;
+        overflow-y: auto !important;
+        max-height: 100vh !important;
       }
       .sidebar.open {
         transform: translateX(0) !important;
@@ -533,7 +540,73 @@
   <div class="container">
     <h1>CODM Map Routes</h1>
     <div class="sidebar">
+      <div class="map-selector" style="position: static; margin-bottom: 1.5rem; width: 100%; max-width: 100%; box-shadow: none;">
+        <label for="sidebarMapSelect" style="display:block;color:#0af;font-weight:bold;margin-bottom:0.5rem;font-size:1.05rem;">Select Map</label>
+        <select id="sidebarMapSelect" class="map-select" onchange="switchMap(this.value)" aria-label="Select map" style="width:100%;font-size:1.1rem;padding:0.6rem 0.5rem;border-radius:10px;">
+          <option value="" selected>🗺️</option>
+          <option value="standoff" title="Standoff">Standoff</option>
+          <option value="firing_range" title="Firing Range">Firing Range</option>
+          <option value="zoo" title="Zoo">Zoo</option>
+          <option value="terminal" title="Terminal">Terminal</option>
+          <option value="tunisia" title="Tunisia">Tunisia</option>
+          <option value="monastery" title="Monastery">Monastery</option>
+          <option value="oasis" title="Oasis">Oasis</option>
+          <option value="rust" title="Rust">Rust</option>
+          <option value="hacienda" title="Hacienda">Hacienda</option>
+          <option value="highrise" title="Highrise">Highrise</option>
+          <option value="icebreaker" title="Icebreaker">Icebreaker</option>
+          <option value="takeoff" title="Takeoff">Takeoff</option>
+          <option value="vacant" title="Vacant">Vacant</option>
+          <option value="hackney_yard" title="Hackney Yard">Hackney Yard</option>
+          <option value="hovec_sawmill" title="Hovec Sawmill">Hovec Sawmill</option>
+          <option value="shipment" title="Shipment">Shipment</option>
+          <option value="scrapyard_2019" title="Scrapyard 2019">Scrapyard 2019</option>
+          <option value="suldal_harbor" title="Suldal Harbor">Suldal Harbor</option>
+          <option value="dome" title="Dome">Dome</option>
+          <option value="slums" title="Slums">Slums</option>
+          <option value="nuketown_russia" title="Nuketown Russia">Nuketown Russia</option>
+          <option value="meltdown" title="Meltdown">Meltdown</option>
+          <option value="summit" title="Summit">Summit</option>
+          <option value="hijacked" title="Hijacked">Hijacked</option>
+          <option value="crash" title="Crash">Crash</option>
+          <option value="crossfire" title="Crossfire">Crossfire</option>
+          <option value="raid" title="Raid">Raid</option>
+          <option value="nuketown" title="Nuketown">Nuketown</option>
+          <option value="killhouse" title="Killhouse">Killhouse</option>
+          <option value="hardhat" title="Hardhat">Hardhat</option>
+          <option value="saloon" title="Saloon">Saloon</option>
+          <option value="pine" title="Pine">Pine</option>
+          <option value="king" title="King">King</option>
+          <option value="docks" title="Docks">Docks</option>
+          <option value="shoot_house" title="Shoot House">Shoot House</option>
+          <option value="cage" title="Cage">Cage</option>
+          <option value="coming_soon" disabled title="More Maps Coming Soon...">More Maps Coming Soon...</option>
+        </select>
+      </div>
       <div class="whiteboard-controls">
+        <div style="margin-bottom:0.7rem;">
+          <div style="font-weight:bold;color:#0af;margin-bottom:0.3rem;font-size:0.98rem;">Route Color</div>
+          <div id="routeColorButtons" style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="route-color-btn" data-color="#0af" style="background:#0af;width:28px;height:28px;border-radius:50%;border:2px solid #fff;outline:2px solid #0af;cursor:pointer;"></button>
+            <button class="route-color-btn" data-color="#e53935" style="background:#e53935;width:28px;height:28px;border-radius:50%;border:2px solid #fff;outline:none;cursor:pointer;"></button>
+            <button class="route-color-btn" data-color="#43a047" style="background:#43a047;width:28px;height:28px;border-radius:50%;border:2px solid #fff;outline:none;cursor:pointer;"></button>
+            <button class="route-color-btn" data-color="#fbc02d" style="background:#fbc02d;width:28px;height:28px;border-radius:50%;border:2px solid #fff;outline:none;cursor:pointer;"></button>
+            <button class="route-color-btn" data-color="#ff9800" style="background:#ff9800;width:28px;height:28px;border-radius:50%;border:2px solid #fff;outline:none;cursor:pointer;"></button>
+            <button class="route-color-btn" data-color="#8e24aa" style="background:#8e24aa;width:28px;height:28px;border-radius:50%;border:2px solid #fff;outline:none;cursor:pointer;"></button>
+          </div>
+        </div>
+        <!-- Marker Color Buttons -->
+        <div style="margin-bottom:0.7rem;">
+          <div style="font-weight:bold;color:#0af;margin-bottom:0.3rem;font-size:0.98rem;">Marker Color</div>
+          <div id="markerColorButtons" style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="marker-color-btn" data-color="#0af" style="background:#0af;width:28px;height:28px;border-radius:50%;border:2px solid #fff;outline:2px solid #0af;cursor:pointer;"></button>
+            <button class="marker-color-btn" data-color="#e53935" style="background:#e53935;width:28px;height:28px;border-radius:50%;border:2px solid #fff;outline:none;cursor:pointer;"></button>
+            <button class="marker-color-btn" data-color="#43a047" style="background:#43a047;width:28px;height:28px;border-radius:50%;border:2px solid #fff;outline:none;cursor:pointer;"></button>
+            <button class="marker-color-btn" data-color="#fbc02d" style="background:#fbc02d;width:28px;height:28px;border-radius:50%;border:2px solid #fff;outline:none;cursor:pointer;"></button>
+            <button class="marker-color-btn" data-color="#ff9800" style="background:#ff9800;width:28px;height:28px;border-radius:50%;border:2px solid #fff;outline:none;cursor:pointer;"></button>
+            <button class="marker-color-btn" data-color="#8e24aa" style="background:#8e24aa;width:28px;height:28px;border-radius:50%;border:2px solid #fff;outline:none;cursor:pointer;"></button>
+          </div>
+        </div>
         <input type="text" id="boardName" placeholder="Enter board name" class="board-input">
         <button id="saveBoardBtn" aria-label="Save current board"><span class="icon">💾</span><span class="label"> Save Board</span></button>
         <select id="savedBoards" onchange="loadBoard()" class="board-select">
@@ -545,10 +618,11 @@
         <button onclick="exportAsImage()" aria-label="Export board as image"><span class="icon">📤</span><span class="label"> Export Board</span></button>
         <button onclick="newBoard()" aria-label="Create new board"><span class="icon">📝</span><span class="label"> New Board</span></button>
         <button onclick="deleteSelectedBoard()" aria-label="Delete selected board"><span class="icon">🗑️</span><span class="label"> Delete Board</span></button>
-        <button onclick="addMarker()" aria-label="Add marker"><span class="icon">📍</span><span class="label"> Add Marker</span></button>
+        <button id="sidebarAddMarkerBtn" aria-label="Add marker"><span class="icon">📍</span><span class="label"> Add Marker</span></button>
         <button id="installBtn" onclick="installApp()" aria-label="Install app" style="display: none;"><span class="icon">📱</span><span class="label"> Install App</span></button>
       </div>
     </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">☰</button>
     <div id="currentMapLabel" style="position:fixed;left:100px;top:1rem;z-index:251;color:#0af;font-weight:bold;font-size:1.05rem;text-shadow:0 1px 4px #000;pointer-events:none;">Standoff</div>
     <div id="offlineIndicator" style="position:fixed;right:1rem;top:1rem;z-index:252;background:#ff4444;color:#fff;padding:0.8rem 1rem;border-radius:8px;font-size:1rem;font-weight:bold;display:none;box-shadow:0 2px 8px rgba(0,0,0,0.3);">Offline</div>
@@ -557,49 +631,6 @@
       <button onclick="installApp()" style="margin-left:1rem;background:#000;color:#0af;border:none;padding:0.8rem 1.5rem;border-radius:8px;font-weight:bold;cursor:pointer;font-size:1rem;min-height:44px;">Install Now</button>
       <button onclick="hideInstallBanner()" style="margin-left:0.5rem;background:transparent;color:#000;border:2px solid #000;padding:0.8rem 1.5rem;border-radius:8px;cursor:pointer;font-size:1rem;min-height:44px;">Not Now</button>
     </div>
-    <div class="map-selector">
-      <select id="sidebarMapSelect" class="map-select" onchange="switchMap(this.value)" aria-label="Select map">
-        <option value="" selected>🗺️</option>
-        <option value="standoff" title="Standoff">Standoff</option>
-        <option value="firing_range" title="Firing Range">Firing Range</option>
-        <option value="zoo" title="Zoo">Zoo</option>
-        <option value="terminal" title="Terminal">Terminal</option>
-        <option value="tunisia" title="Tunisia">Tunisia</option>
-        <option value="monastery" title="Monastery">Monastery</option>
-        <option value="oasis" title="Oasis">Oasis</option>
-        <option value="rust" title="Rust">Rust</option>
-        <option value="hacienda" title="Hacienda">Hacienda</option>
-        <option value="highrise" title="Highrise">Highrise</option>
-        <option value="icebreaker" title="Icebreaker">Icebreaker</option>
-        <option value="takeoff" title="Takeoff">Takeoff</option>
-        <option value="vacant" title="Vacant">Vacant</option>
-        <option value="hackney_yard" title="Hackney Yard">Hackney Yard</option>
-        <option value="hovec_sawmill" title="Hovec Sawmill">Hovec Sawmill</option>
-        <option value="shipment" title="Shipment">Shipment</option>
-        <option value="scrapyard_2019" title="Scrapyard 2019">Scrapyard 2019</option>
-        <option value="suldal_harbor" title="Suldal Harbor">Suldal Harbor</option>
-        <option value="dome" title="Dome">Dome</option>
-        <option value="slums" title="Slums">Slums</option>
-        <option value="nuketown_russia" title="Nuketown Russia">Nuketown Russia</option>
-        <option value="meltdown" title="Meltdown">Meltdown</option>
-        <option value="summit" title="Summit">Summit</option>
-        <option value="hijacked" title="Hijacked">Hijacked</option>
-        <option value="crash" title="Crash">Crash</option>
-        <option value="crossfire" title="Crossfire">Crossfire</option>
-        <option value="raid" title="Raid">Raid</option>
-        <option value="nuketown" title="Nuketown">Nuketown</option>
-        <option value="killhouse" title="Killhouse">Killhouse</option>
-        <option value="hardhat" title="Hardhat">Hardhat</option>
-        <option value="saloon" title="Saloon">Saloon</option>
-        <option value="pine" title="Pine">Pine</option>
-        <option value="king" title="King">King</option>
-        <option value="docks" title="Docks">Docks</option>
-        <option value="shoot_house" title="Shoot House">Shoot House</option>
-        <option value="cage" title="Cage">Cage</option>
-        <option value="coming_soon" disabled title="More Maps Coming Soon...">More Maps Coming Soon...</option>
-      </select>
-    </div>
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <main>
       <div class="map-entry" id="standoff">
@@ -882,6 +913,9 @@
     let markers = [];
     let currentMap = 'standoff';
     let deferredPrompt;
+    // Color state
+    let currentRouteColor = '#0af';
+    let currentMarkerColor = '#0af';
 
     // PWA Installation
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -937,12 +971,23 @@
       }
     }
 
-    // Service Worker Registration
+    // Register service worker for PWA features (make sure sw.js is in the project root)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/tacops/sw.js')
+        navigator.serviceWorker.register('/sw.js')
           .then((registration) => {
             console.log('SW registered: ', registration);
+            // Prompt user to reload when a new SW is available
+            registration.onupdatefound = () => {
+              const newWorker = registration.installing;
+              newWorker.onstatechange = () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  if (confirm('A new version is available. Reload now?')) {
+                    window.location.reload();
+                  }
+                }
+              };
+            };
           })
           .catch((registrationError) => {
             console.log('SW registration failed: ', registrationError);
@@ -1087,11 +1132,18 @@
       if (!canvas) return;
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.strokeStyle = 'rgba(0, 170, 255, 1)';
-      ctx.lineWidth = 2;
-      ctx.lineCap = 'round';
       const { drawings } = getCurrentDrawingState();
-      drawings.forEach(path => {
+      drawings.forEach(route => {
+        // Support old format (array of points) and new format ({color, path})
+        let color = '#0af';
+        let path = route;
+        if (route && route.path && Array.isArray(route.path)) {
+          color = route.color || '#0af';
+          path = route.path;
+        }
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
         if (path.length > 0) {
           ctx.beginPath();
           ctx.moveTo(path[0].x, path[0].y);
@@ -1105,11 +1157,13 @@
 
     // Drawing event handlers
     let path = [];
+    let drawingColor = currentRouteColor;
     function startDrawing(e) {
       isDrawing = true;
       const canvas = e.target;
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      ctx.strokeStyle = '#0af';
+      // Capture the color at the start of drawing
+      drawingColor = currentRouteColor;
       const rect = canvas.getBoundingClientRect();
       let x, y;
       if (e.touches && e.touches.length > 0) {
@@ -1127,7 +1181,7 @@
       if (!isDrawing) return;
       const canvas = e.target;
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      ctx.strokeStyle = '#0af';
+      ctx.strokeStyle = drawingColor;
       const rect = canvas.getBoundingClientRect();
       let x, y;
       if (e.touches && e.touches.length > 0) {
@@ -1149,7 +1203,8 @@
       isDrawing = false;
       if (path.length > 1) {
         const { drawings, undone } = getCurrentDrawingState();
-        drawings.push([...path]);
+        // Store as { color, path } using the color at draw start
+        drawings.push({ color: drawingColor, path: [...path] });
         undone.length = 0; // Clear redo stack
       }
       redraw();
@@ -1585,12 +1640,18 @@
       // Draw the map image at canvas size
       exportCtx.drawImage(mapImg, 0, 0, canvasWidth, canvasHeight);
       
-      // Draw the routes using stored coordinates directly (no scaling needed)
-      exportCtx.strokeStyle = 'rgba(0, 170, 255, 1)';
-      exportCtx.lineWidth = 2;
-      exportCtx.lineCap = 'round';
+      // Draw the routes using stored coordinates and colors
       const { drawings } = getCurrentDrawingState();
-      drawings.forEach(path => {
+      drawings.forEach(route => {
+        let color = '#0af';
+        let path = route;
+        if (route && route.path && Array.isArray(route.path)) {
+          color = route.color || '#0af';
+          path = route.path;
+        }
+        exportCtx.strokeStyle = color;
+        exportCtx.lineWidth = 2;
+        exportCtx.lineCap = 'round';
         if (path.length > 0) {
           exportCtx.beginPath();
           exportCtx.moveTo(path[0].x, path[0].y);
@@ -1612,7 +1673,7 @@
         exportCtx.font = 'bold 18px Arial';
         exportCtx.textAlign = 'center';
         exportCtx.textBaseline = 'middle';
-        exportCtx.fillStyle = 'rgba(0,0,0,0.8)';
+        exportCtx.fillStyle = markerData.color || 'rgba(0,0,0,0.8)';
         const text = markerData.text || '';
         const padding = 10;
         const metrics = exportCtx.measureText(text);
@@ -1656,7 +1717,7 @@
     };
 
     // Add these functions to handle the new buttons
-    function addMarker() {
+    function addMarkerGlobal() {
       const canvas = getActiveCanvas();
       const mapContainer = canvas ? canvas.parentElement : null;
       if (!canvas || !mapContainer) return;
@@ -1665,9 +1726,11 @@
       // Default to center
       const x = 0.5;
       const y = 0.5;
-      const marker = createMarker(text, x, y, false);
+      // Always use the global currentMarkerColor
+      const color = currentMarkerColor;
+      const marker = createMarker(text, x, y, false, color);
       mapContainer.appendChild(marker);
-      getCurrentMarkers().push({ text, x, y });
+      getCurrentMarkers().push({ text, x, y, color });
     }
 
     // Refactor sidebar button handlers to always use the active map/canvas/markers
@@ -1728,13 +1791,13 @@
       if (!activeMap) return;
       const markers = getCurrentMarkers();
       markers.forEach(markerData => {
-        const marker = createMarker(markerData.text, markerData.x, markerData.y, true);
+        const marker = createMarker(markerData.text, markerData.x, markerData.y, true, markerData.color);
         activeMap.appendChild(marker);
       });
     }
 
-    // Improved createMarker function
-    function createMarker(text, x, y, isRestoring) {
+    // Improved createMarker function with color support
+    function createMarker(text, x, y, isRestoring, color) {
       const marker = document.createElement('div');
       marker.className = 'text-marker';
       marker.textContent = text;
@@ -1743,6 +1806,22 @@
       marker.draggable = true;
       marker.tabIndex = 0;
       marker.setAttribute('aria-label', `Tactical marker: ${text}`);
+      // Set marker background color
+      const markerColor = color || '#0af';
+      marker.style.background = markerColor;
+      // Set marker text color for contrast
+      function getContrastYIQ(hexcolor) {
+        hexcolor = hexcolor.replace('#', '');
+        if (hexcolor.length === 3) {
+          hexcolor = hexcolor[0]+hexcolor[0]+hexcolor[1]+hexcolor[1]+hexcolor[2]+hexcolor[2];
+        }
+        const r = parseInt(hexcolor.substr(0,2),16);
+        const g = parseInt(hexcolor.substr(2,2),16);
+        const b = parseInt(hexcolor.substr(4,2),16);
+        const yiq = ((r*299)+(g*587)+(b*114))/1000;
+        return (yiq >= 128) ? '#111' : '#fff';
+      }
+      marker.style.color = getContrastYIQ(markerColor);
       // Drag logic (mouse)
       marker.addEventListener('dragstart', function(e) {
         e.dataTransfer.setData('text/plain', '');
@@ -1821,6 +1900,8 @@
           const idx = Array.from(mapContainer.querySelectorAll('.text-marker')).indexOf(marker);
           if (markers[idx]) {
             markers[idx].text = newText;
+            // Ensure color is preserved
+            markers[idx].color = color;
           }
         }
       });
@@ -1855,35 +1936,40 @@
       }
     });
 
-    // Sidebar toggle for mobile
+    // Sidebar toggle for mobile and sidebar logic
     document.addEventListener('DOMContentLoaded', function() {
       var mapSelect = document.getElementById('sidebarMapSelect');
       if (mapSelect) mapSelect.selectedIndex = 0;
       const sidebar = document.querySelector('.sidebar');
       const toggleBtn = document.getElementById('sidebarToggle');
-      const overlay = document.getElementById('sidebarOverlay');
+
       function closeSidebar() {
         sidebar.classList.remove('open');
-        overlay.style.display = 'none';
+        var overlay = document.getElementById('sidebarOverlay');
+        if (overlay) overlay.style.display = 'none';
       }
       function openSidebar() {
         sidebar.classList.add('open');
-        overlay.style.display = 'block';
-      }
-      if (toggleBtn && sidebar && overlay) {
-        toggleBtn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          openSidebar();
-        });
-        overlay.addEventListener('click', function() {
-          closeSidebar();
-        });
+        var overlay = document.getElementById('sidebarOverlay');
+        if (overlay) overlay.style.display = 'block';
       }
       function setSidebarInitialState() {
         if (window.innerWidth <= 768) {
           closeSidebar(); // Always closed on mobile by default
         } else {
           openSidebar();  // Always open on desktop
+        }
+      }
+      if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          openSidebar();
+        });
+        var overlay = document.getElementById('sidebarOverlay');
+        if (overlay) {
+          overlay.addEventListener('click', function() {
+            closeSidebar();
+          });
         }
       }
       setSidebarInitialState();
@@ -1916,7 +2002,7 @@
           }
         });
         // FAB actions
-        document.getElementById('fabAddMarker').onclick = function() { addMarker(); closeFabMenu(); };
+        document.getElementById('fabAddMarker').onclick = function() { addMarkerGlobal(); closeFabMenu(); };
         document.getElementById('fabSaveBoard').onclick = function() { saveBoard(); closeFabMenu(); };
         document.getElementById('fabExportBoard').onclick = function() { exportAsImage(); closeFabMenu(); };
         document.getElementById('fabClearBoard').onclick = function() { resetCanvas(); closeFabMenu(); };
@@ -1925,6 +2011,69 @@
         document.getElementById('fabInstall').onclick = function() { installApp(); closeFabMenu(); };
       }
     });
+
+    // Color button logic (single handler for marker color)
+    document.addEventListener('DOMContentLoaded', function() {
+      // Route color buttons
+      const routeBtns = document.querySelectorAll('.route-color-btn');
+      routeBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          currentRouteColor = btn.getAttribute('data-color');
+          routeBtns.forEach(b => b.style.outline = 'none');
+          btn.style.outline = `2px solid ${currentRouteColor}`;
+        });
+      });
+      // Marker color buttons (single handler)
+      const markerBtns = document.querySelectorAll('.marker-color-btn');
+      markerBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          currentMarkerColor = btn.getAttribute('data-color');
+          markerBtns.forEach(b => b.style.outline = 'none');
+          btn.style.outline = `2px solid ${currentMarkerColor}`;
+        });
+      });
+      // Set default outline on page load
+      markerBtns.forEach(btn => {
+        if (btn.getAttribute('data-color') === currentMarkerColor) {
+          btn.style.outline = `2px solid ${currentMarkerColor}`;
+        }
+      });
+    });
+
+    // Ensure FAB/mobile Add Marker also uses the correct color
+    document.addEventListener('DOMContentLoaded', function() {
+      const fabAddMarkerBtn = document.getElementById('fabAddMarker');
+      if (fabAddMarkerBtn) {
+        fabAddMarkerBtn.onclick = function() { addMarkerGlobal(); closeFabMenu(); };
+      }
+    });
+
+    // Wire up Add Marker buttons after DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      var sidebarAddMarkerBtn = document.getElementById('sidebarAddMarkerBtn');
+      if (sidebarAddMarkerBtn) {
+        sidebarAddMarkerBtn.onclick = addMarkerGlobal;
+      }
+      var fabAddMarkerBtn = document.getElementById('fabAddMarker');
+      if (fabAddMarkerBtn) {
+        fabAddMarkerBtn.onclick = function() { addMarkerGlobal(); closeFabMenu(); };
+      }
+    });
+  </script>
+
+  <!-- On DOMContentLoaded, visually indicate the default selected marker color -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set default outline for marker color buttons
+      const markerBtns = document.querySelectorAll('.marker-color-btn');
+      markerBtns.forEach(btn => {
+        if (btn.getAttribute('data-color') === currentMarkerColor) {
+          btn.style.outline = `2px solid ${currentMarkerColor}`;
+        }
+      });
+    });
   </script>
 </body>
 </html>
+
+
