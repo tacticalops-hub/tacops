@@ -1,9 +1,19 @@
 const BASE = '/CODM%20site';
 const CACHE_NAME = 'codm-maps-v1.0.3';
 const urlsToCache = [
-  BASE + '/',
   BASE + '/index.html',
   BASE + '/manifest.json',
+  BASE + '/styles.css',
+  BASE + '/script.js',
+  // Icons
+  BASE + '/icons/icon-72x72.png',
+  BASE + '/icons/icon-96x96.png',
+  BASE + '/icons/icon-128x128.png',
+  BASE + '/icons/icon-144x144.png',
+  BASE + '/icons/icon-152x152.png',
+  BASE + '/icons/icon-192x192.png',
+  BASE + '/icons/icon-384x384.png',
+  BASE + '/icons/icon-512x512.png',
   // Map images
   BASE + '/standoff-clean.png',
   BASE + '/firing_range_alt.png',
