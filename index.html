@@ -620,6 +620,7 @@
         <button onclick="deleteSelectedBoard()" aria-label="Delete selected board"><span class="icon">🗑️</span><span class="label"> Delete Board</span></button>
         <button id="sidebarAddMarkerBtn" aria-label="Add marker"><span class="icon">📍</span><span class="label"> Add Marker</span></button>
         <button id="installBtn" onclick="installApp()" aria-label="Install app" style="display: none;"><span class="icon">📱</span><span class="label"> Install App</span></button>
+        <button id="checkUpdateBtn" aria-label="Check for update" style="background:#0af;color:#fff;"><span class="icon">🔄</span><span class="label"> Check for Update</span></button>
       </div>
     </div>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -2057,6 +2058,33 @@
       var fabAddMarkerBtn = document.getElementById('fabAddMarker');
       if (fabAddMarkerBtn) {
         fabAddMarkerBtn.onclick = function() { addMarkerGlobal(); closeFabMenu(); };
+      }
+    });
+
+    // Check for Update button logic
+    document.addEventListener('DOMContentLoaded', function() {
+      const checkUpdateBtn = document.getElementById('checkUpdateBtn');
+      if (checkUpdateBtn) {
+        checkUpdateBtn.onclick = function() {
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistration().then(function(reg) {
+              if (reg) {
+                reg.update().then(function() {
+                  if (reg.waiting) {
+                    reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                    setTimeout(function() { window.location.reload(); }, 500);
+                  } else {
+                    alert('No update available.');
+                  }
+                });
+              } else {
+                alert('No service worker registered.');
+              }
+            });
+          } else {
+            alert('Service workers are not supported in this browser.');
+          }
+        };
       }
     });
   </script>
