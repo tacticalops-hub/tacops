@@ -975,7 +975,7 @@
     // Register service worker for PWA features (make sure sw.js is in the project root)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
+        navigator.serviceWorker.register('sw.js')
           .then((registration) => {
             console.log('SW registered: ', registration);
             // Prompt user to reload when a new SW is available
