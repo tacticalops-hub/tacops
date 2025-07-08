@@ -544,42 +544,46 @@
         <label for="sidebarMapSelect" style="display:block;color:#0af;font-weight:bold;margin-bottom:0.5rem;font-size:1.05rem;">Select Map</label>
         <select id="sidebarMapSelect" class="map-select" onchange="switchMap(this.value)" aria-label="Select map" style="width:100%;font-size:1.1rem;padding:0.6rem 0.5rem;border-radius:10px;">
           <option value="" selected>🗺️</option>
-          <option value="standoff" title="Standoff">Standoff</option>
-          <option value="firing_range" title="Firing Range">Firing Range</option>
-          <option value="zoo" title="Zoo">Zoo</option>
-          <option value="terminal" title="Terminal">Terminal</option>
-          <option value="tunisia" title="Tunisia">Tunisia</option>
-          <option value="monastery" title="Monastery">Monastery</option>
-          <option value="oasis" title="Oasis">Oasis</option>
-          <option value="rust" title="Rust">Rust</option>
-          <option value="hacienda" title="Hacienda">Hacienda</option>
-          <option value="highrise" title="Highrise">Highrise</option>
-          <option value="icebreaker" title="Icebreaker">Icebreaker</option>
-          <option value="takeoff" title="Takeoff">Takeoff</option>
-          <option value="vacant" title="Vacant">Vacant</option>
-          <option value="hackney_yard" title="Hackney Yard">Hackney Yard</option>
-          <option value="hovec_sawmill" title="Hovec Sawmill">Hovec Sawmill</option>
-          <option value="shipment" title="Shipment">Shipment</option>
-          <option value="scrapyard_2019" title="Scrapyard 2019">Scrapyard 2019</option>
-          <option value="suldal_harbor" title="Suldal Harbor">Suldal Harbor</option>
-          <option value="dome" title="Dome">Dome</option>
-          <option value="slums" title="Slums">Slums</option>
-          <option value="nuketown_russia" title="Nuketown Russia">Nuketown Russia</option>
-          <option value="meltdown" title="Meltdown">Meltdown</option>
-          <option value="summit" title="Summit">Summit</option>
-          <option value="hijacked" title="Hijacked">Hijacked</option>
+          <option value="cage" title="Cage">Cage</option>
+          <option value="cheshire_park" title="Cheshire Park">Cheshire Park</option>
+          <option value="coastal" title="Coastal">Coastal</option>
+          <option value="combine" title="Combine">Combine</option>
           <option value="crash" title="Crash">Crash</option>
           <option value="crossfire" title="Crossfire">Crossfire</option>
-          <option value="raid" title="Raid">Raid</option>
-          <option value="nuketown" title="Nuketown">Nuketown</option>
-          <option value="killhouse" title="Killhouse">Killhouse</option>
-          <option value="hardhat" title="Hardhat">Hardhat</option>
-          <option value="saloon" title="Saloon">Saloon</option>
-          <option value="pine" title="Pine">Pine</option>
-          <option value="king" title="King">King</option>
+          <option value="diesel" title="Diesel">Diesel</option>
           <option value="docks" title="Docks">Docks</option>
+          <option value="dome" title="Dome">Dome</option>
+          <option value="firing_range" title="Firing Range">Firing Range</option>
+          <option value="hackney_yard" title="Hackney Yard">Hackney Yard</option>
+          <option value="hacienda" title="Hacienda">Hacienda</option>
+          <option value="hardhat" title="Hardhat">Hardhat</option>
+          <option value="hijacked" title="Hijacked">Hijacked</option>
+          <option value="hovec_sawmill" title="Hovec Sawmill">Hovec Sawmill</option>
+          <option value="khandor_hideout" title="Khandor Hideout">Khandor Hideout</option>
+          <option value="killhouse" title="Killhouse">Killhouse</option>
+          <option value="king" title="King">King</option>
+          <option value="kurohana_metropolis" title="Kurohana Metropolis">Kurohana Metropolis</option>
+          <option value="meltdown" title="Meltdown">Meltdown</option>
+          <option value="monastery" title="Monastery">Monastery</option>
+          <option value="nuketown" title="Nuketown">Nuketown</option>
+          <option value="nuketown_russia" title="Nuketown Russia">Nuketown Russia</option>
+          <option value="oasis" title="Oasis">Oasis</option>
+          <option value="pine" title="Pine">Pine</option>
+          <option value="raid" title="Raid">Raid</option>
+          <option value="rust" title="Rust">Rust</option>
+          <option value="saloon" title="Saloon">Saloon</option>
+          <option value="scrapyard_2019" title="Scrapyard 2019">Scrapyard 2019</option>
+          <option value="shipment" title="Shipment">Shipment</option>
           <option value="shoot_house" title="Shoot House">Shoot House</option>
-          <option value="cage" title="Cage">Cage</option>
+          <option value="slums" title="Slums">Slums</option>
+          <option value="standoff" title="Standoff">Standoff</option>
+          <option value="suldal_harbor" title="Suldal Harbor">Suldal Harbor</option>
+          <option value="summit" title="Summit">Summit</option>
+          <option value="takeoff" title="Takeoff">Takeoff</option>
+          <option value="terminal" title="Terminal">Terminal</option>
+          <option value="tunisia" title="Tunisia">Tunisia</option>
+          <option value="vacant" title="Vacant">Vacant</option>
+          <option value="zoo" title="Zoo">Zoo</option>
           <option value="coming_soon" disabled title="More Maps Coming Soon...">More Maps Coming Soon...</option>
         </select>
       </div>
@@ -643,28 +647,28 @@
 
       <div class="map-entry" id="firing_range">
         <div class="map-container">
-          <img id="firingRangeMapImage" src="firing_range_alt.png" alt="Firing Range Map">
+          <img id="firingRangeMapImage" src="firing_range_labeled.png" alt="Firing Range Map">
           <canvas id="firingRangeDrawingCanvas"></canvas>
         </div>
       </div>
 
       <div class="map-entry" id="zoo" style="display:none;">
         <div class="map-container">
-          <img id="zooMapImage" src="zoo.png" alt="Zoo Map">
+          <img id="zooMapImage" src="zoo_labeled.png" alt="Zoo Map">
           <canvas id="zooDrawingCanvas"></canvas>
         </div>
       </div>
 
       <div class="map-entry" id="terminal" style="display:none;">
         <div class="map-container">
-          <img id="terminalMapImage" src="terminal.png" alt="Terminal Map">
+          <img id="terminalMapImage" src="terminal_labeled.png" alt="Terminal Map">
           <canvas id="terminalDrawingCanvas"></canvas>
         </div>
       </div>
 
       <div class="map-entry" id="tunisia" style="display:none;">
         <div class="map-container">
-          <img id="tunisiaMapImage" src="tunisia.png" alt="Tunisia Map">
+          <img id="tunisiaMapImage" src="tunisia_labeled.png" alt="Tunisia Map">
           <canvas id="tunisiaDrawingCanvas"></canvas>
         </div>
       </div>
@@ -692,7 +696,7 @@
 
       <div class="map-entry" id="hacienda" style="display:none;">
         <div class="map-container">
-          <img id="haciendaMapImage" src="hacienda.png" alt="Hacienda Map">
+          <img id="haciendaMapImage" src="hacienda_labeled.png" alt="Hacienda Map">
           <canvas id="haciendaDrawingCanvas"></canvas>
         </div>
       </div>
@@ -769,7 +773,7 @@
 
       <div class="map-entry" id="slums" style="display:none;">
         <div class="map-container">
-          <img id="slumsMapImage" src="slums.png" alt="Slums Map">
+          <img id="slumsMapImage" src="slums_labeled.png" alt="Slums Map">
           <canvas id="slumsDrawingCanvas"></canvas>
         </div>
       </div>
@@ -804,7 +808,7 @@
 
       <div class="map-entry" id="crash" style="display:none;">
         <div class="map-container">
-          <img id="crashMapImage" src="crash.png" alt="Crash Map">
+          <img id="crashMapImage" src="crash_labeled.png" alt="Crash Map">
           <canvas id="crashDrawingCanvas"></canvas>
         </div>
       </div>
@@ -818,7 +822,7 @@
 
       <div class="map-entry" id="raid" style="display:none;">
         <div class="map-container">
-          <img id="raidMapImage" src="raid.png" alt="Raid Map">
+          <img id="raidMapImage" src="raid_labeled.png" alt="Raid Map">
           <canvas id="raidDrawingCanvas"></canvas>
         </div>
       </div>
@@ -883,6 +887,48 @@
         <div class="map-container">
           <img id="cageMapImage" src="cage.png" alt="Cage Map">
           <canvas id="cageDrawingCanvas"></canvas>
+        </div>
+      </div>
+
+      <div class="map-entry" id="coastal" style="display:none;">
+        <div class="map-container">
+          <img id="coastalMapImage" src="coastal_labeled.png" alt="Coastal Map">
+          <canvas id="coastalDrawingCanvas"></canvas>
+        </div>
+      </div>
+
+      <div class="map-entry" id="diesel" style="display:none;">
+        <div class="map-container">
+          <img id="dieselMapImage" src="diesel_labeled.png" alt="Diesel Map">
+          <canvas id="dieselDrawingCanvas"></canvas>
+        </div>
+      </div>
+
+      <div class="map-entry" id="kurohana_metropolis" style="display:none;">
+        <div class="map-container">
+          <img id="kurohanaMetropolisMapImage" src="kurohana_metropolis_labeled.png" alt="Kurohana Metropolis Map">
+          <canvas id="kurohanaMetropolisDrawingCanvas"></canvas>
+        </div>
+      </div>
+
+      <div class="map-entry" id="combine" style="display:none;">
+        <div class="map-container">
+          <img id="combineMapImage" src="combine_labeled.png" alt="Combine Map">
+          <canvas id="combineDrawingCanvas"></canvas>
+        </div>
+      </div>
+
+      <div class="map-entry" id="cheshire_park" style="display:none;">
+        <div class="map-container">
+          <img id="cheshireParkMapImage" src="cheshire_park_labeled.png" alt="Cheshire Park Map">
+          <canvas id="cheshireParkDrawingCanvas"></canvas>
+        </div>
+      </div>
+
+      <div class="map-entry" id="khandor_hideout" style="display:none;">
+        <div class="map-container">
+          <img id="khandorHideoutMapImage" src="khandor_hideout_labeled.png" alt="Khandor Hideout Map">
+          <canvas id="khandorHideoutDrawingCanvas"></canvas>
         </div>
       </div>
     </main>
@@ -1053,7 +1099,13 @@
       king: { drawings: [], undone: [] },
       docks: { drawings: [], undone: [] },
       shoot_house: { drawings: [], undone: [] },
-      cage: { drawings: [], undone: [] }
+      cage: { drawings: [], undone: [] },
+      coastal: { drawings: [], undone: [] },
+      diesel: { drawings: [], undone: [] },
+      kurohana_metropolis: { drawings: [], undone: [] },
+      combine: { drawings: [], undone: [] },
+      cheshire_park: { drawings: [], undone: [] },
+      khandor_hideout: { drawings: [], undone: [] }
     };
 
     // Markers state per map
@@ -1093,7 +1145,13 @@
       king: [],
       docks: [],
       shoot_house: [],
-      cage: []
+      cage: [],
+      coastal: [],
+      diesel: [],
+      kurohana_metropolis: [],
+      combine: [],
+      cheshire_park: [],
+      khandor_hideout: []
     };
 
     // Helper to get current map's drawing state
@@ -1277,6 +1335,12 @@
         const docksCanvas = document.getElementById('docksDrawingCanvas');
         const shootHouseCanvas = document.getElementById('shootHouseDrawingCanvas');
         const cageCanvas = document.getElementById('cageDrawingCanvas');
+        const coastalCanvas = document.getElementById('coastalDrawingCanvas');
+        const dieselCanvas = document.getElementById('dieselDrawingCanvas');
+        const kurohanaMetropolisCanvas = document.getElementById('kurohanaMetropolisDrawingCanvas');
+        const combineCanvas = document.getElementById('combineDrawingCanvas');
+        const cheshireParkCanvas = document.getElementById('cheshireParkDrawingCanvas');
+        const khandorHideoutCanvas = document.getElementById('khandorHideoutDrawingCanvas');
         if (standoffCanvas) {
             setupCanvas(standoffCanvas);
         }
@@ -1384,6 +1448,24 @@
         }
         if (cageCanvas) {
             setupCanvas(cageCanvas);
+        }
+        if (coastalCanvas) {
+            setupCanvas(coastalCanvas);
+        }
+        if (dieselCanvas) {
+            setupCanvas(dieselCanvas);
+        }
+        if (kurohanaMetropolisCanvas) {
+            setupCanvas(kurohanaMetropolisCanvas);
+        }
+        if (combineCanvas) {
+            setupCanvas(combineCanvas);
+        }
+        if (cheshireParkCanvas) {
+            setupCanvas(cheshireParkCanvas);
+        }
+        if (khandorHideoutCanvas) {
+            setupCanvas(khandorHideoutCanvas);
         }
         // Set up the map selector
         const mapSelector = document.getElementById('sidebarMapSelect');
@@ -1616,6 +1698,12 @@
         else if (mapId === 'docks') mapLabel.textContent = 'Docks';
         else if (mapId === 'shoot_house') mapLabel.textContent = 'Shoot House';
         else if (mapId === 'cage') mapLabel.textContent = 'Cage';
+        else if (mapId === 'coastal') mapLabel.textContent = 'Coastal';
+        else if (mapId === 'diesel') mapLabel.textContent = 'Diesel';
+        else if (mapId === 'kurohana_metropolis') mapLabel.textContent = 'Kurohana Metropolis';
+        else if (mapId === 'combine') mapLabel.textContent = 'Combine';
+        else if (mapId === 'cheshire_park') mapLabel.textContent = 'Cheshire Park';
+        else if (mapId === 'khandor_hideout') mapLabel.textContent = 'Khandor Hideout';
         else mapLabel.textContent = '';
       }
     }
