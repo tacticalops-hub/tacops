@@ -1338,7 +1338,6 @@
 
     function setupCanvas(canvas) {
         if (!canvas) return;
-        
         function attachEventListeners() {
           // Remove existing listeners to prevent duplicates
           canvas.removeEventListener('mousedown', startDrawing);
@@ -1349,7 +1348,6 @@
           canvas.removeEventListener('touchmove', handleTouchMove);
           canvas.removeEventListener('touchend', handleTouchEnd);
           canvas.removeEventListener('touchcancel', handleTouchEnd);
-          
           // Add event listeners
           canvas.addEventListener('mousedown', startDrawing);
           canvas.addEventListener('mousemove', draw);
@@ -1360,73 +1358,43 @@
           canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
           canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
         }
-        
         function resizeCanvas() {
           const parent = canvas.parentElement;
           const mapImg = parent.querySelector('img');
-          
           if (mapImg && mapImg.complete && mapImg.naturalWidth > 0) {
-            // Use getBoundingClientRect for both dimensions and positioning
+            // Use the displayed size, not natural size
             const mapRect = mapImg.getBoundingClientRect();
-            const containerRect = parent.getBoundingClientRect();
-            
-            // Only proceed if the image has actual dimensions
-            if (mapRect.width > 0 && mapRect.height > 0) {
-              // Use the exact displayed dimensions for both internal and CSS
-              const canvasWidth = mapRect.width;
-              const canvasHeight = mapRect.height;
-              
-              // Set both internal canvas dimensions and CSS dimensions to match exactly
-              canvas.width = canvasWidth;
-              canvas.height = canvasHeight;
-              canvas.style.width = canvasWidth + 'px';
-              canvas.style.height = canvasHeight + 'px';
-              
-              // Position canvas to exactly overlay the image
-              // Get the image's actual position relative to its container
-              const imageRect = mapImg.getBoundingClientRect();
-              const parentRect = parent.getBoundingClientRect();
-              
-              // Calculate position relative to the parent container
-              const imageLeft = imageRect.left - parentRect.left;
-              const imageTop = imageRect.top - parentRect.top;
-              
-              canvas.style.left = imageLeft + 'px';
-              canvas.style.top = imageTop + 'px';
-              
-              // Reattach event listeners after resize
-              attachEventListeners();
-              
-              // Redraw if there are existing drawings
-              redraw();
-            }
+            // Set both the canvas's internal size and CSS size
+            canvas.width = mapRect.width;
+            canvas.height = mapRect.height;
+            canvas.style.width = mapRect.width + 'px';
+            canvas.style.height = mapRect.height + 'px';
+            // Position canvas at (0,0) in the container
+            canvas.style.left = '0px';
+            canvas.style.top = '0px';
+            // Reattach event listeners after resize
+            attachEventListeners();
+            // Redraw after resizing
+            redraw();
           }
         }
-        
         // Wait for image to load before initial resize
         const mapImg = canvas.parentElement.querySelector('img');
         if (mapImg) {
           if (mapImg.complete && mapImg.naturalWidth > 0) {
-            // Image is already loaded, resize immediately
             resizeCanvas();
           } else {
-            // Wait for image to load
             mapImg.onload = function() {
-              // Add a small delay to ensure the image is fully rendered
               setTimeout(resizeCanvas, 100);
             };
           }
         }
-        
         window.addEventListener('resize', resizeCanvas);
-        
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         ctx.strokeStyle = '#0af';
         ctx.lineWidth = 2;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        
-        // Initial event listener attachment
         attachEventListeners();
     }
     
