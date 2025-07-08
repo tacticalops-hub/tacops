@@ -172,11 +172,12 @@
 
     .map-container {
       position: relative;
-      width: fit-content;
+      display: inline-block;
+      width: auto;
       height: auto;
       margin: 0 auto;
-      max-height: 100vw;
-      overflow: visible !important;
+      /* max-height: 100vw; */
+      /* overflow: visible !important; */
     }
 
     .map-container img {
@@ -1362,21 +1363,17 @@
           const parent = canvas.parentElement;
           const mapImg = parent.querySelector('img');
           if (mapImg && mapImg.complete && mapImg.naturalWidth > 0) {
-            // Use the displayed size, not natural size, and round to integers
             const mapRect = mapImg.getBoundingClientRect();
             const width = Math.round(mapRect.width);
             const height = Math.round(mapRect.height);
-            // Set both the canvas's internal size and CSS size
+            if (width === 0 || height === 0) return; // Skip if not visible
             canvas.width = width;
             canvas.height = height;
             canvas.style.width = width + 'px';
             canvas.style.height = height + 'px';
-            // Position canvas at (0,0) in the container
             canvas.style.left = '0px';
             canvas.style.top = '0px';
-            // Reattach event listeners after resize
             attachEventListeners();
-            // Redraw after resizing
             redraw();
           }
         }
