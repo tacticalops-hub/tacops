@@ -1333,7 +1333,26 @@
         if (saveButton) {
             saveButton.addEventListener('click', saveBoard);
         }
-        // ...rest of your onload logic...
+        // Wire up Undo/Redo buttons
+        document.getElementById('undoBtn').onclick = undoDrawing;
+        document.getElementById('redoBtn').onclick = redoDrawing;
+        // Load saved boards
+        updateBoardList();
+        
+        // Handle URL parameters for PWA shortcuts
+        const urlParams = new URLSearchParams(window.location.search);
+        const mapParam = urlParams.get('map');
+        if (mapParam && mapParam !== 'standoff') {
+          // Switch to the specified map
+          setTimeout(() => {
+            switchMap(mapParam);
+            // Update the select dropdown
+            const mapSelect = document.getElementById('sidebarMapSelect');
+            if (mapSelect) {
+              mapSelect.value = mapParam;
+            }
+          }, 100);
+        }
     };
 
     function setupCanvas(canvas) {
