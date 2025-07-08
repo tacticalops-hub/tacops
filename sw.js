@@ -1,5 +1,7 @@
+self.skipWaiting();
+
 const BASE = '/tacops';
-const CACHE_NAME = 'codm-maps-v1.0.3';
+const CACHE_NAME = 'tacops-v2';
 const urlsToCache = [
   BASE + '/index.html',
   BASE + '/manifest.json',
