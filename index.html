@@ -191,8 +191,8 @@
       left: 0;
       cursor: crosshair;
       border: 2px solid red;
-      width: auto !important;
-      height: auto !important;
+      /* width: auto !important; */
+      /* height: auto !important; */
     }
 
     /* Override mobile canvas sizing to allow JavaScript control */
@@ -1362,13 +1362,15 @@
           const parent = canvas.parentElement;
           const mapImg = parent.querySelector('img');
           if (mapImg && mapImg.complete && mapImg.naturalWidth > 0) {
-            // Use the displayed size, not natural size
+            // Use the displayed size, not natural size, and round to integers
             const mapRect = mapImg.getBoundingClientRect();
+            const width = Math.round(mapRect.width);
+            const height = Math.round(mapRect.height);
             // Set both the canvas's internal size and CSS size
-            canvas.width = mapRect.width;
-            canvas.height = mapRect.height;
-            canvas.style.width = mapRect.width + 'px';
-            canvas.style.height = mapRect.height + 'px';
+            canvas.width = width;
+            canvas.height = height;
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
             // Position canvas at (0,0) in the container
             canvas.style.left = '0px';
             canvas.style.top = '0px';
