@@ -543,7 +543,7 @@
       <div class="map-selector" style="position: static; margin-bottom: 1.5rem; width: 100%; max-width: 100%; box-shadow: none;">
         <label for="sidebarMapSelect" style="display:block;color:#0af;font-weight:bold;margin-bottom:0.5rem;font-size:1.05rem;">Select Map</label>
         <select id="sidebarMapSelect" class="map-select" onchange="switchMap(this.value)" aria-label="Select map" style="width:100%;font-size:1.1rem;padding:0.6rem 0.5rem;border-radius:10px;">
-          <option value="" selected>🗺️</option>
+          <option value="">🗺️</option>
           <option value="cage" title="Cage">Cage</option>
           <option value="cheshire_park" title="Cheshire Park">Cheshire Park</option>
           <option value="coastal" title="Coastal">Coastal</option>
@@ -554,11 +554,13 @@
           <option value="docks" title="Docks">Docks</option>
           <option value="dome" title="Dome">Dome</option>
           <option value="firing_range" title="Firing Range">Firing Range</option>
-          <option value="hackney_yard" title="Hackney Yard">Hackney Yard</option>
           <option value="hacienda" title="Hacienda">Hacienda</option>
+          <option value="hackney_yard" title="Hackney Yard">Hackney Yard</option>
           <option value="hardhat" title="Hardhat">Hardhat</option>
           <option value="hijacked" title="Hijacked">Hijacked</option>
+          <option value="highrise" title="Highrise">Highrise</option>
           <option value="hovec_sawmill" title="Hovec Sawmill">Hovec Sawmill</option>
+          <option value="icebreaker" title="Icebreaker">Icebreaker</option>
           <option value="khandor_hideout" title="Khandor Hideout">Khandor Hideout</option>
           <option value="killhouse" title="Killhouse">Killhouse</option>
           <option value="king" title="King">King</option>
@@ -961,7 +963,7 @@
     let isDrawing = false;
     let currentDrawing = null;
     let markers = [];
-    let currentMap = 'standoff';
+    let currentMap = 'cage';
     let deferredPrompt;
     // Color state
     let currentRouteColor = '#0af';
@@ -1296,183 +1298,32 @@
         document.querySelectorAll('.map-entry').forEach(entry => {
             entry.style.display = 'none';
         });
-        // Show only the Standoff map
-        const standoffMap = document.getElementById('standoff');
-        if (standoffMap) {
-            standoffMap.style.display = 'block';
-        }
-        // Set up canvas for all maps
-        const standoffCanvas = document.getElementById('standoffDrawingCanvas');
-        const firingRangeCanvas = document.getElementById('firingRangeDrawingCanvas');
-        const zooCanvas = document.getElementById('zooDrawingCanvas');
-        const terminalCanvas = document.getElementById('terminalDrawingCanvas');
-        const tunisiaCanvas = document.getElementById('tunisiaDrawingCanvas');
-        const monasteryCanvas = document.getElementById('monasteryDrawingCanvas');
-        const oasisCanvas = document.getElementById('oasisDrawingCanvas');
-        const rustCanvas = document.getElementById('rustDrawingCanvas');
-        const haciendaCanvas = document.getElementById('haciendaDrawingCanvas');
-        const highriseCanvas = document.getElementById('highriseDrawingCanvas');
-        const icebreakerCanvas = document.getElementById('icebreakerDrawingCanvas');
-        const takeoffCanvas = document.getElementById('takeoffDrawingCanvas');
-        const vacantCanvas = document.getElementById('vacantDrawingCanvas');
-        const hackneyYardCanvas = document.getElementById('hackneyYardDrawingCanvas');
-        const hovecSawmillCanvas = document.getElementById('hovecSawmillDrawingCanvas');
-        const shipmentCanvas = document.getElementById('shipmentDrawingCanvas');
-        const scrapyard2019Canvas = document.getElementById('scrapyard2019DrawingCanvas');
-        const suldalHarborCanvas = document.getElementById('suldalHarborDrawingCanvas');
-        const domeCanvas = document.getElementById('domeDrawingCanvas');
-        const slumsCanvas = document.getElementById('slumsDrawingCanvas');
-        const nuketownRussiaCanvas = document.getElementById('nuketownRussiaDrawingCanvas');
-        const meltdownCanvas = document.getElementById('meltdownDrawingCanvas');
-        const summitCanvas = document.getElementById('summitDrawingCanvas');
-        const hijackedCanvas = document.getElementById('hijackedDrawingCanvas');
-        const crashCanvas = document.getElementById('crashDrawingCanvas');
-        const crossfireCanvas = document.getElementById('crossfireDrawingCanvas');
-        const raidCanvas = document.getElementById('raidDrawingCanvas');
-        const nuketownCanvas = document.getElementById('nuketownDrawingCanvas');
-        const killhouseCanvas = document.getElementById('killhouseDrawingCanvas');
-        const hardhatCanvas = document.getElementById('hardhatDrawingCanvas');
-        const saloonCanvas = document.getElementById('saloonDrawingCanvas');
-        const pineCanvas = document.getElementById('pineDrawingCanvas');
-        const kingCanvas = document.getElementById('kingDrawingCanvas');
-        const docksCanvas = document.getElementById('docksDrawingCanvas');
-        const shootHouseCanvas = document.getElementById('shootHouseDrawingCanvas');
-        const cageCanvas = document.getElementById('cageDrawingCanvas');
-        const coastalCanvas = document.getElementById('coastalDrawingCanvas');
-        const dieselCanvas = document.getElementById('dieselDrawingCanvas');
-        const kurohanaMetropolisCanvas = document.getElementById('kurohanaMetropolisDrawingCanvas');
-        const combineCanvas = document.getElementById('combineDrawingCanvas');
-        const cheshireParkCanvas = document.getElementById('cheshireParkDrawingCanvas');
-        const khandorHideoutCanvas = document.getElementById('khandorHideoutDrawingCanvas');
-        if (standoffCanvas) {
-            setupCanvas(standoffCanvas);
-        }
-        if (firingRangeCanvas) {
-            setupCanvas(firingRangeCanvas);
-        }
-        if (zooCanvas) {
-            setupCanvas(zooCanvas);
-        }
-        if (terminalCanvas) {
-            setupCanvas(terminalCanvas);
-        }
-        if (tunisiaCanvas) {
-            setupCanvas(tunisiaCanvas);
-        }
-        if (monasteryCanvas) {
-            setupCanvas(monasteryCanvas);
-        }
-        if (oasisCanvas) {
-            setupCanvas(oasisCanvas);
-        }
-        if (rustCanvas) {
-            setupCanvas(rustCanvas);
-        }
-        if (haciendaCanvas) {
-            setupCanvas(haciendaCanvas);
-        }
-        if (highriseCanvas) {
-            setupCanvas(highriseCanvas);
-        }
-        if (icebreakerCanvas) {
-            setupCanvas(icebreakerCanvas);
-        }
-        if (takeoffCanvas) {
-            setupCanvas(takeoffCanvas);
-        }
-        if (vacantCanvas) {
-            setupCanvas(vacantCanvas);
-        }
-        if (hackneyYardCanvas) {
-            setupCanvas(hackneyYardCanvas);
-        }
-        if (hovecSawmillCanvas) {
-            setupCanvas(hovecSawmillCanvas);
-        }
-        if (shipmentCanvas) {
-            setupCanvas(shipmentCanvas);
-        }
-        if (scrapyard2019Canvas) {
-            setupCanvas(scrapyard2019Canvas);
-        }
-        if (suldalHarborCanvas) {
-            setupCanvas(suldalHarborCanvas);
-        }
-        if (domeCanvas) {
-            setupCanvas(domeCanvas);
-        }
-        if (slumsCanvas) {
-            setupCanvas(slumsCanvas);
-        }
-        if (nuketownRussiaCanvas) {
-            setupCanvas(nuketownRussiaCanvas);
-        }
-        if (meltdownCanvas) {
-            setupCanvas(meltdownCanvas);
-        }
-        if (summitCanvas) {
-            setupCanvas(summitCanvas);
-        }
-        if (hijackedCanvas) {
-            setupCanvas(hijackedCanvas);
-        }
-        if (crashCanvas) {
-            setupCanvas(crashCanvas);
-        }
-        if (crossfireCanvas) {
-            setupCanvas(crossfireCanvas);
-        }
-        if (raidCanvas) {
-            setupCanvas(raidCanvas);
-        }
-        if (nuketownCanvas) {
-            setupCanvas(nuketownCanvas);
-        }
-        if (killhouseCanvas) {
-            setupCanvas(killhouseCanvas);
-        }
-        if (hardhatCanvas) {
-            setupCanvas(hardhatCanvas);
-        }
-        if (saloonCanvas) {
-            setupCanvas(saloonCanvas);
-        }
-        if (pineCanvas) {
-            setupCanvas(pineCanvas);
-        }
-        if (kingCanvas) {
-            setupCanvas(kingCanvas);
-        }
-        if (docksCanvas) {
-            setupCanvas(docksCanvas);
-        }
-        if (shootHouseCanvas) {
-            setupCanvas(shootHouseCanvas);
-        }
-        if (cageCanvas) {
-            setupCanvas(cageCanvas);
-        }
-        if (coastalCanvas) {
-            setupCanvas(coastalCanvas);
-        }
-        if (dieselCanvas) {
-            setupCanvas(dieselCanvas);
-        }
-        if (kurohanaMetropolisCanvas) {
-            setupCanvas(kurohanaMetropolisCanvas);
-        }
-        if (combineCanvas) {
-            setupCanvas(combineCanvas);
-        }
-        if (cheshireParkCanvas) {
-            setupCanvas(cheshireParkCanvas);
-        }
-        if (khandorHideoutCanvas) {
-            setupCanvas(khandorHideoutCanvas);
-        }
-        // Set up the map selector
+        // Find the first real map option (skip placeholder)
         const mapSelector = document.getElementById('sidebarMapSelect');
+        let firstMapValue = '';
         if (mapSelector) {
+            for (let i = 0; i < mapSelector.options.length; i++) {
+                const opt = mapSelector.options[i];
+                if (opt.value && !opt.disabled) {
+                    firstMapValue = opt.value;
+                    mapSelector.value = firstMapValue;
+                    break;
+                }
+            }
+        }
+        if (firstMapValue) {
+            currentMap = firstMapValue;
+            const firstMapDiv = document.getElementById(firstMapValue);
+            if (firstMapDiv) {
+                firstMapDiv.style.display = 'block';
+            }
+            // Set the current map label
+            const mapLabel = document.getElementById('currentMapLabel');
+            if (mapLabel) {
+                // Use the option's text as the label
+                const selectedOption = mapSelector.querySelector(`option[value="${firstMapValue}"]`);
+                mapLabel.textContent = selectedOption ? selectedOption.textContent : firstMapValue;
+            }
             mapSelector.addEventListener('change', function() {
                 switchMap(this.value);
             });
@@ -1482,26 +1333,7 @@
         if (saveButton) {
             saveButton.addEventListener('click', saveBoard);
         }
-            // Wire up Undo/Redo buttons
-    document.getElementById('undoBtn').onclick = undoDrawing;
-    document.getElementById('redoBtn').onclick = redoDrawing;
-    // Load saved boards
-    updateBoardList();
-    
-    // Handle URL parameters for PWA shortcuts
-    const urlParams = new URLSearchParams(window.location.search);
-    const mapParam = urlParams.get('map');
-    if (mapParam && mapParam !== 'standoff') {
-      // Switch to the specified map
-      setTimeout(() => {
-        switchMap(mapParam);
-        // Update the select dropdown
-        const mapSelect = document.getElementById('sidebarMapSelect');
-        if (mapSelect) {
-          mapSelect.value = mapParam;
-        }
-      }, 100);
-    }
+        // ...rest of your onload logic...
     };
 
     function setupCanvas(canvas) {
