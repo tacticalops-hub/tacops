@@ -1,58 +1,57 @@
 self.skipWaiting();
 
-const BASE = '/tacops';
 const CACHE_NAME = 'tacops-v2';
 const urlsToCache = [
-  BASE + '/index.html',
-  BASE + '/manifest.json',
-  BASE + '/styles.css',
-  BASE + '/script.js',
+  './index.html',
+  './manifest.json',
+  './styles.css',
+  './script.js',
   // Icons
-  BASE + '/icons/icon-72x72.png',
-  BASE + '/icons/icon-96x96.png',
-  BASE + '/icons/icon-128x128.png',
-  BASE + '/icons/icon-144x144.png',
-  BASE + '/icons/icon-152x152.png',
-  BASE + '/icons/icon-192x192.png',
-  BASE + '/icons/icon-384x384.png',
-  BASE + '/icons/icon-512x512.png',
+  './icons/icon-72x72.png',
+  './icons/icon-96x96.png',
+  './icons/icon-128x128.png',
+  './icons/icon-144x144.png',
+  './icons/icon-152x152.png',
+  './icons/icon-192x192.png',
+  './icons/icon-384x384.png',
+  './icons/icon-512x512.png',
   // Map images
-  BASE + '/standoff-clean.png',
-  BASE + '/firing_range_alt.png',
-  BASE + '/zoo.png',
-  BASE + '/terminal.png',
-  BASE + '/tunisia.png',
-  BASE + '/monastery.png',
-  BASE + '/oasis.png',
-  BASE + '/rust.png',
-  BASE + '/hacienda.png',
-  BASE + '/highrise.png',
-  BASE + '/icebreaker.png',
-  BASE + '/takeoff.png',
-  BASE + '/vacant.png',
-  BASE + '/hackney_yard.png',
-  BASE + '/hovec_sawmill.png',
-  BASE + '/shipment.png',
-  BASE + '/scrapyard_2019.png',
-  BASE + '/suldal_harbor.png',
-  BASE + '/dome.png',
-  BASE + '/slums.png',
-  BASE + '/nuketown_russia.png',
-  BASE + '/meltdown.png',
-  BASE + '/summit.png',
-  BASE + '/hijacked.png',
-  BASE + '/crash.png',
-  BASE + '/crossfire.png',
-  BASE + '/raid.png',
-  BASE + '/nuketown.png',
-  BASE + '/killhouse.png',
-  BASE + '/hardhat.png',
-  BASE + '/saloon.png',
-  BASE + '/pine.png',
-  BASE + '/king.png',
-  BASE + '/docks.png',
-  BASE + '/shoot_house.png',
-  BASE + '/cage.png'
+  './standoff-clean.png',
+  './firing_range_alt.png',
+  './zoo.png',
+  './terminal.png',
+  './tunisia.png',
+  './monastery.png',
+  './oasis.png',
+  './rust.png',
+  './hacienda.png',
+  './highrise.png',
+  './icebreaker.png',
+  './takeoff.png',
+  './vacant.png',
+  './hackney_yard.png',
+  './hovec_sawmill.png',
+  './shipment.png',
+  './scrapyard_2019.png',
+  './suldal_harbor.png',
+  './dome.png',
+  './slums.png',
+  './nuketown_russia.png',
+  './meltdown.png',
+  './summit.png',
+  './hijacked.png',
+  './crash.png',
+  './crossfire.png',
+  './raid.png',
+  './nuketown.png',
+  './killhouse.png',
+  './hardhat.png',
+  './saloon.png',
+  './pine.png',
+  './king.png',
+  './docks.png',
+  './shoot_house.png',
+  './cage.png'
 ];
 
 // Install event - cache resources and activate new SW immediately
@@ -99,8 +98,8 @@ function doBackgroundSync() {
 self.addEventListener('push', event => {
   const options = {
     body: event.data ? event.data.text() : 'New CODM map update available!',
-    icon: BASE + '/icons/icon-192x192.png',
-    badge: BASE + '/icons/icon-72x72.png',
+    icon: './icons/icon-192x192.png',
+    badge: './icons/icon-72x72.png',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
@@ -110,12 +109,12 @@ self.addEventListener('push', event => {
       {
         action: 'explore',
         title: 'Open App',
-        icon: BASE + '/icons/icon-96x96.png'
+        icon: './icons/icon-96x96.png'
       },
       {
         action: 'close',
         title: 'Close',
-        icon: BASE + '/icons/icon-96x96.png'
+        icon: './icons/icon-96x96.png'
       }
     ]
   };
@@ -130,7 +129,7 @@ self.addEventListener('notificationclick', event => {
 
   if (event.action === 'explore') {
     event.waitUntil(
-      clients.openWindow(BASE + '/')
+      clients.openWindow('./')
     );
   }
 }); 
