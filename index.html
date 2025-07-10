@@ -534,61 +534,195 @@
     html, body {
       width: 100vw;
     }
+
+    .upload-section {
+      width: 220px;
+      background: #181c24;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+      padding: 0.7rem 0.7rem 1.1rem 0.7rem;
+      margin-bottom: 1.5rem;
+      border: 2px solid #0af;
+      box-sizing: border-box;
+    }
+
+    .upload-section label {
+      color: #0af;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      font-size: 1.05rem;
+      display: block;
+      text-align: left;
+    }
+
+    .upload-btn {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 10px;
+      background: #232a36;
+      color: #0af;
+      border: 1.5px solid #0af;
+      font-family: inherit;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      outline: none;
+    }
+
+    .upload-btn:hover {
+      background: #1a2330;
+      color: #fff;
+      border: 2px solid #0af;
+    }
+
+    .upload-status {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #0af;
+      text-align: center;
+      min-height: 1.2rem;
+    }
+
+    .upload-status.error {
+      color: #ff4444;
+    }
+
+    .upload-status.success {
+      color: #44ff44;
+    }
+
+    /* Uploaded maps list styling */
+    .uploaded-maps-list {
+      margin-bottom: 0.8rem;
+      max-height: 150px;
+      overflow-y: auto;
+      border: 1px solid #0af;
+      border-radius: 8px;
+      background: #232a36;
+      display: none; /* Hidden by default, shown when maps exist */
+    }
+
+    .uploaded-maps-list:not(:empty) {
+      display: block;
+    }
+
+    .uploaded-map-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.7rem;
+      border-bottom: 1px solid #333;
+      cursor: pointer;
+      transition: background 0.2s;
+      color: #0af;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    .uploaded-map-item:last-child {
+      border-bottom: none;
+    }
+
+    .uploaded-map-item:hover {
+      background: #1a2330;
+    }
+
+    .uploaded-map-item.selected {
+      background: #0af;
+      color: #000;
+    }
+
+    .uploaded-map-name {
+      flex: 1;
+      margin-right: 0.5rem;
+    }
+
+    /* Rename button styling */
+    .rename-btn {
+      background: none;
+      border: none;
+      color: #0af;
+      cursor: pointer;
+      font-size: 0.8rem;
+      padding: 2px 4px;
+      margin-left: 4px;
+      border-radius: 3px;
+      transition: background 0.2s;
+      vertical-align: middle;
+    }
+
+    .rename-btn:hover {
+      background: rgba(0, 170, 255, 0.2);
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>CODM Map Routes</h1>
     <div class="sidebar">
-      <div class="map-selector" style="position: static; margin-bottom: 1.5rem; width: 100%; max-width: 100%; box-shadow: none;">
-        <label for="sidebarMapSelect" style="display:block;color:#0af;font-weight:bold;margin-bottom:0.5rem;font-size:1.05rem;">Select Map</label>
-        <select id="sidebarMapSelect" class="map-select" onchange="switchMap(this.value)" aria-label="Select map" style="width:100%;font-size:1.1rem;padding:0.6rem 0.5rem;border-radius:10px;">
-          <option value="">🗺️</option>
-          <option value="cage" title="Cage">Cage</option>
-          <option value="cheshire_park" title="Cheshire Park">Cheshire Park</option>
-          <option value="coastal" title="Coastal">Coastal</option>
-          <option value="combine" title="Combine">Combine</option>
-          <option value="crash" title="Crash">Crash</option>
-          <option value="crossfire" title="Crossfire">Crossfire</option>
-          <option value="diesel" title="Diesel">Diesel</option>
-          <option value="docks" title="Docks">Docks</option>
-          <option value="dome" title="Dome">Dome</option>
-          <option value="firing_range" title="Firing Range">Firing Range</option>
-          <option value="hacienda" title="Hacienda">Hacienda</option>
-          <option value="hackney_yard" title="Hackney Yard">Hackney Yard</option>
-          <option value="hardhat" title="Hardhat">Hardhat</option>
-          <option value="hijacked" title="Hijacked">Hijacked</option>
-          <option value="highrise" title="Highrise">Highrise</option>
-          <option value="hovec_sawmill" title="Hovec Sawmill">Hovec Sawmill</option>
-          <option value="icebreaker" title="Icebreaker">Icebreaker</option>
-          <option value="khandor_hideout" title="Khandor Hideout">Khandor Hideout</option>
-          <option value="killhouse" title="Killhouse">Killhouse</option>
-          <option value="king" title="King">King</option>
-          <option value="kurohana_metropolis" title="Kurohana Metropolis">Kurohana Metropolis</option>
-          <option value="meltdown" title="Meltdown">Meltdown</option>
-          <option value="monastery" title="Monastery">Monastery</option>
-          <option value="nuketown" title="Nuketown">Nuketown</option>
-          <option value="nuketown_russia" title="Nuketown Russia">Nuketown Russia</option>
-          <option value="oasis" title="Oasis">Oasis</option>
-          <option value="pine" title="Pine">Pine</option>
-          <option value="raid" title="Raid">Raid</option>
-          <option value="rust" title="Rust">Rust</option>
-          <option value="saloon" title="Saloon">Saloon</option>
-          <option value="scrapyard_2019" title="Scrapyard 2019">Scrapyard 2019</option>
-          <option value="shipment" title="Shipment">Shipment</option>
-          <option value="shoot_house" title="Shoot House">Shoot House</option>
-          <option value="slums" title="Slums">Slums</option>
-          <option value="standoff" title="Standoff">Standoff</option>
-          <option value="suldal_harbor" title="Suldal Harbor">Suldal Harbor</option>
-          <option value="summit" title="Summit">Summit</option>
-          <option value="takeoff" title="Takeoff">Takeoff</option>
-          <option value="terminal" title="Terminal">Terminal</option>
-          <option value="tunisia" title="Tunisia">Tunisia</option>
-          <option value="vacant" title="Vacant">Vacant</option>
-          <option value="zoo" title="Zoo">Zoo</option>
-          <option value="coming_soon" disabled title="More Maps Coming Soon...">More Maps Coming Soon...</option>
+      <h2>CODM Tactical Maps</h2>
+      
+      <div class="map-selector">
+        <label for="sidebarMapSelect">Select Map:</label>
+        <div id="uploadedMapsList" class="uploaded-maps-list">
+          <!-- Uploaded maps with rename buttons will be added here -->
+        </div>
+        <select id="sidebarMapSelect">
+          <option value="" disabled selected>Choose a map...</option>
+          <!-- Uploaded maps will be inserted here dynamically -->
+          <option value="cage">Cage</option>
+          <option value="cheshire_park">Cheshire Park</option>
+          <option value="coastal">Coastal</option>
+          <option value="combine">Combine</option>
+          <option value="crash">Crash</option>
+          <option value="crossfire">Crossfire</option>
+          <option value="diesel">Diesel</option>
+          <option value="docks">Docks</option>
+          <option value="dome">Dome</option>
+          <option value="firing_range">Firing Range</option>
+          <option value="hacienda">Hacienda</option>
+          <option value="hackney_yard">Hackney Yard</option>
+          <option value="hardhat">Hardhat</option>
+          <option value="hijacked">Hijacked</option>
+          <option value="highrise">Highrise</option>
+          <option value="hovec_sawmill">Hovec Sawmill</option>
+          <option value="icebreaker">Icebreaker</option>
+          <option value="khandor_hideout">Khandor Hideout</option>
+          <option value="killhouse">Killhouse</option>
+          <option value="king">King</option>
+          <option value="kurohana_metropolis">Kurohana Metropolis</option>
+          <option value="meltdown">Meltdown</option>
+          <option value="monastery">Monastery</option>
+          <option value="nuketown">Nuketown</option>
+          <option value="nuketown_russia">Nuketown Russia</option>
+          <option value="oasis">Oasis</option>
+          <option value="pine">Pine</option>
+          <option value="raid">Raid</option>
+          <option value="rust">Rust</option>
+          <option value="saloon">Saloon</option>
+          <option value="scrapyard_2019">Scrapyard 2019</option>
+          <option value="shipment">Shipment</option>
+          <option value="shoot_house">Shoot House</option>
+          <option value="slums">Slums</option>
+          <option value="standoff">Standoff</option>
+          <option value="suldal_harbor">Suldal Harbor</option>
+          <option value="summit">Summit</option>
+          <option value="takeoff">Takeoff</option>
+          <option value="terminal">Terminal</option>
+          <option value="tunisia">Tunisia</option>
+          <option value="vacant">Vacant</option>
+          <option value="zoo">Zoo</option>
         </select>
       </div>
+
+      <div class="upload-section">
+        <label for="imageUpload">Upload Custom Map:</label>
+        <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+        <button id="uploadBtn" class="upload-btn">📁 Choose Image</button>
+        <div id="uploadStatus" class="upload-status"></div>
+      </div>
+
       <div class="whiteboard-controls">
         <div style="margin-bottom:0.7rem;">
           <div style="font-weight:bold;color:#0af;margin-bottom:0.3rem;font-size:0.98rem;">Route Color</div>
@@ -968,6 +1102,99 @@
     // Color state
     let currentRouteColor = '#0af';
     let currentMarkerColor = '#0af';
+    
+    // Upload functionality
+    let uploadedMaps = {};
+    let uploadCounter = 0;
+    
+    // Persistent storage functions
+    function saveUploadedMaps() {
+      try {
+        const dataToSave = {
+          uploadedMaps: uploadedMaps,
+          uploadCounter: uploadCounter,
+          // Save drawings and markers for uploaded maps
+          uploadedMapDrawings: {},
+          uploadedMapMarkers: {}
+        };
+        
+        // Save drawings and markers for each uploaded map
+        Object.keys(uploadedMaps).forEach(mapId => {
+          if (mapDrawings[mapId]) {
+            dataToSave.uploadedMapDrawings[mapId] = mapDrawings[mapId];
+          }
+          if (mapMarkers[mapId]) {
+            dataToSave.uploadedMapMarkers[mapId] = mapMarkers[mapId];
+          }
+        });
+        
+        localStorage.setItem('uploadedMapsData', JSON.stringify(dataToSave));
+        console.log('Uploaded maps saved successfully');
+      } catch (error) {
+        console.error('Error saving uploaded maps:', error);
+      }
+    }
+    
+    function loadUploadedMaps() {
+      try {
+        const savedData = localStorage.getItem('uploadedMapsData');
+        if (savedData) {
+          const data = JSON.parse(savedData);
+          uploadedMaps = data.uploadedMaps || {};
+          uploadCounter = data.uploadCounter || 0;
+          
+          // Restore drawings and markers for uploaded maps
+          if (data.uploadedMapDrawings) {
+            Object.keys(data.uploadedMapDrawings).forEach(mapId => {
+              mapDrawings[mapId] = data.uploadedMapDrawings[mapId];
+            });
+          }
+          if (data.uploadedMapMarkers) {
+            Object.keys(data.uploadedMapMarkers).forEach(mapId => {
+              mapMarkers[mapId] = data.uploadedMapMarkers[mapId];
+            });
+          }
+          
+          // Recreate map entries and add to selector
+          Object.keys(uploadedMaps).forEach(mapId => {
+            recreateUploadedMap(mapId, uploadedMaps[mapId]);
+          });
+          
+          console.log('Uploaded maps loaded successfully');
+        }
+      } catch (error) {
+        console.error('Error loading uploaded maps:', error);
+        // Clear corrupted data
+        localStorage.removeItem('uploadedMapsData');
+      }
+    }
+    
+    function recreateUploadedMap(mapId, mapData) {
+      // Create map entry HTML
+      const mapEntry = document.createElement('div');
+      mapEntry.className = 'map-entry';
+      mapEntry.id = mapId;
+      mapEntry.style.display = 'none';
+      
+      mapEntry.innerHTML = `
+        <div class="map-container">
+          <img id="${mapId}MapImage" src="${mapData.base64}" alt="${mapData.name} Map">
+          <canvas id="${mapId}DrawingCanvas"></canvas>
+        </div>
+      `;
+      
+      // Add to main content
+      document.querySelector('main').appendChild(mapEntry);
+      
+      // Add to custom uploaded maps list
+      addToUploadedMapsList(mapId, mapData.name);
+      
+      // Setup canvas for the restored map
+      const canvas = document.getElementById(`${mapId}DrawingCanvas`);
+      if (canvas) {
+        setupCanvas(canvas);
+      }
+    }
 
     // PWA Installation
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -987,18 +1214,10 @@
       }
       
       // Show install button in FAB menu for mobile
-      const fabInstall = document.getElementById('fabInstall');
-      if (fabInstall) {
-        fabInstall.style.display = 'block';
+      const fabInstallBtn = document.getElementById('fabInstall');
+      if (fabInstallBtn) {
+        fabInstallBtn.style.display = 'block';
       }
-      
-      // Show install banner
-      const installBanner = document.getElementById('installBanner');
-      if (installBanner) {
-        installBanner.style.display = 'block';
-      }
-      
-      console.log('App can be installed');
     }
 
     function hideInstallBanner() {
@@ -1026,20 +1245,24 @@
     // Register service worker for PWA features (make sure sw.js is in the project root)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
+        const isLocalhost = ['localhost', '127.0.0.1'].includes(location.hostname);
+        
         navigator.serviceWorker.register('./sw.js')
           .then((registration) => {
             console.log('SW registered: ', registration);
-            // Prompt user to reload when a new SW is available
-            registration.onupdatefound = () => {
-              const newWorker = registration.installing;
-              newWorker.onstatechange = () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  if (confirm('A new version is available. Reload now?')) {
-                    window.location.reload();
+            // Prompt user to reload when a new SW is available (only on production)
+            if (!isLocalhost) {
+              registration.onupdatefound = () => {
+                const newWorker = registration.installing;
+                newWorker.onstatechange = () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    if (confirm('A new version is available. Reload now?')) {
+                      window.location.reload();
+                    }
                   }
-                }
+                };
               };
-            };
+            }
           })
           .catch((registrationError) => {
             console.log('SW registration failed: ', registrationError);
@@ -1272,6 +1495,11 @@
         // Store as { color, path } using the color at draw start
         drawings.push({ color: drawingColor, path: [...path] });
         undone.length = 0; // Clear redo stack
+        
+        // Auto-save uploaded map data
+        if (currentMap.startsWith('uploaded_')) {
+          saveUploadedMaps();
+        }
       }
       redraw();
     }
@@ -1339,11 +1567,37 @@
         // Load saved boards
         updateBoardList();
         
+        // Load uploaded maps from localStorage
+        loadUploadedMaps();
+        
         // Setup all canvases
         const allCanvases = document.querySelectorAll('canvas[id$="DrawingCanvas"]');
         allCanvases.forEach(canvas => {
           setupCanvas(canvas);
         });
+        
+        // Setup upload functionality
+        const uploadBtn = document.getElementById('uploadBtn');
+        const imageUpload = document.getElementById('imageUpload');
+        
+        if (uploadBtn && imageUpload) {
+          uploadBtn.addEventListener('click', () => {
+            imageUpload.click();
+          });
+          
+          imageUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+              if (file.type.startsWith('image/')) {
+                handleImageUpload(file);
+              } else {
+                const statusDiv = document.getElementById('uploadStatus');
+                statusDiv.textContent = 'Please select an image file.';
+                statusDiv.className = 'upload-status error';
+              }
+            }
+          });
+        }
         
         // Handle URL parameters for PWA shortcuts
         const urlParams = new URLSearchParams(window.location.search);
@@ -1359,7 +1613,7 @@
             }
           }, 100);
         }
-    };
+      };
 
     function setupCanvas(canvas) {
         if (!canvas) return;
@@ -1464,6 +1718,11 @@
       }
       // Update current map
       currentMap = mapId;
+      
+      // Update selected state in custom uploaded maps list
+      if (mapId.startsWith('uploaded_')) {
+        updateSelectedMapItem(mapId);
+      }
       
       // Resize canvas for the newly active map
       setTimeout(() => {
@@ -1648,6 +1907,11 @@
       const marker = createMarker(text, x, y, false, color);
       mapContainer.appendChild(marker);
       getCurrentMarkers().push({ text, x, y, color });
+      
+      // Auto-save uploaded map data
+      if (currentMap.startsWith('uploaded_')) {
+        saveUploadedMaps();
+      }
     }
 
     // Refactor sidebar button handlers to always use the active map/canvas/markers
@@ -1762,6 +2026,10 @@
         if (markers[idx]) {
           markers[idx].x = x;
           markers[idx].y = y;
+          // Auto-save uploaded map data
+          if (currentMap.startsWith('uploaded_')) {
+            saveUploadedMaps();
+          }
         }
       });
       // Touch drag logic
@@ -1803,6 +2071,10 @@
         if (markers[idx]) {
           markers[idx].x = left;
           markers[idx].y = top;
+          // Auto-save uploaded map data
+          if (currentMap.startsWith('uploaded_')) {
+            saveUploadedMaps();
+          }
         }
       }, { passive: false });
       // Double-click to edit
@@ -1819,6 +2091,10 @@
             markers[idx].text = newText;
             // Ensure color is preserved
             markers[idx].color = color;
+            // Auto-save uploaded map data
+            if (currentMap.startsWith('uploaded_')) {
+              saveUploadedMaps();
+            }
           }
         }
       });
@@ -2076,6 +2352,214 @@
         ctx.fillText(label, x, y);
         ctx.restore();
       });
+    }
+
+    // Image upload and processing functions
+    function resizeImage(file) {
+      return new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        
+        img.onload = function() {
+          // Calculate new dimensions (max 1920px width or height)
+          const maxSize = 1920;
+          let { width, height } = img;
+          
+          if (width > height) {
+            if (width > maxSize) {
+              height = (height * maxSize) / width;
+              width = maxSize;
+            }
+          } else {
+            if (height > maxSize) {
+              width = (width * maxSize) / height;
+              height = maxSize;
+            }
+          }
+          
+          // Resize image
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Convert to base64
+          const base64 = canvas.toDataURL('image/jpeg', 0.9);
+          resolve(base64);
+        };
+        
+        img.src = URL.createObjectURL(file);
+      });
+    }
+
+    function addUploadedMap(base64Data, fileName) {
+      uploadCounter++;
+      const mapId = `uploaded_${uploadCounter}`;
+      const mapName = fileName.replace(/\.[^/.]+$/, ""); // Remove file extension
+      
+      // Create map entry HTML
+      const mapEntry = document.createElement('div');
+      mapEntry.className = 'map-entry';
+      mapEntry.id = mapId;
+      mapEntry.style.display = 'none';
+      
+      mapEntry.innerHTML = `
+        <div class="map-container">
+          <img id="${mapId}MapImage" src="${base64Data}" alt="${mapName} Map">
+          <canvas id="${mapId}DrawingCanvas"></canvas>
+        </div>
+      `;
+      
+      // Add to main content
+      document.querySelector('main').appendChild(mapEntry);
+      
+      // Add to custom uploaded maps list
+      addToUploadedMapsList(mapId, mapName);
+      
+      // Store map data
+      uploadedMaps[mapId] = {
+        name: mapName,
+        base64: base64Data
+      };
+      
+      // Setup canvas for the new map
+      const canvas = document.getElementById(`${mapId}DrawingCanvas`);
+      if (canvas) {
+        setupCanvas(canvas);
+      }
+      
+      // Add to drawing state
+      mapDrawings[mapId] = { drawings: [], undone: [] };
+      mapMarkers[mapId] = [];
+      
+      // Save to localStorage
+      saveUploadedMaps();
+      
+      return mapId;
+    }
+
+    function handleImageUpload(file) {
+      const statusDiv = document.getElementById('uploadStatus');
+      statusDiv.textContent = 'Processing image...';
+      statusDiv.className = 'upload-status';
+      
+      resizeImage(file)
+        .then(base64Data => {
+          const mapId = addUploadedMap(base64Data, file.name);
+          
+          // Switch to the uploaded map
+          switchMap(mapId);
+          
+          // Update selector
+          const mapSelector = document.getElementById('sidebarMapSelect');
+          mapSelector.value = mapId;
+          
+          statusDiv.textContent = 'Upload successful!';
+          statusDiv.className = 'upload-status success';
+          
+          // Clear the file input
+          document.getElementById('imageUpload').value = '';
+        })
+        .catch(error => {
+          console.error('Upload error:', error);
+          statusDiv.textContent = 'Upload failed. Please try again.';
+          statusDiv.className = 'upload-status error';
+        });
+    }
+
+    // Rename functionality
+    function renameUploadedMap(mapId) {
+      const currentName = uploadedMaps[mapId]?.name || '';
+      const newName = prompt('Enter new name for this map:', currentName);
+      
+      if (newName && newName.trim() && newName !== currentName) {
+        // Update the stored name
+        uploadedMaps[mapId].name = newName.trim();
+        
+        // Update the display
+        updateUploadedMapName(mapId, newName.trim());
+        
+        // Update the alt text of the image
+        const mapImg = document.getElementById(`${mapId}MapImage`);
+        if (mapImg) {
+          mapImg.alt = `${newName.trim()} Map`;
+        }
+        
+        // Save to localStorage
+        saveUploadedMaps();
+        
+        console.log(`Map renamed from "${currentName}" to "${newName.trim()}"`);
+      }
+    }
+
+    function createRenameButton(mapId) {
+      const button = document.createElement('button');
+      button.className = 'rename-btn';
+      button.innerHTML = '✏️';
+      button.title = 'Rename this map';
+      button.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        renameUploadedMap(mapId);
+      };
+      return button;
+    }
+
+    function addToUploadedMapsList(mapId, mapName) {
+      const uploadedMapsList = document.getElementById('uploadedMapsList');
+      if (!uploadedMapsList) return;
+      
+      const mapItem = document.createElement('div');
+      mapItem.className = 'uploaded-map-item';
+      mapItem.setAttribute('data-map-id', mapId);
+      
+      const mapNameSpan = document.createElement('span');
+      mapNameSpan.className = 'uploaded-map-name';
+      mapNameSpan.textContent = `📁 ${mapName}`;
+      
+      const renameBtn = createRenameButton(mapId);
+      
+      mapItem.appendChild(mapNameSpan);
+      mapItem.appendChild(renameBtn);
+      
+      // Add click handler to switch to this map
+      mapItem.addEventListener('click', (e) => {
+        if (e.target !== renameBtn) {
+          switchMap(mapId);
+          updateSelectedMapItem(mapId);
+        }
+      });
+      
+      // Insert at the top of the list
+      if (uploadedMapsList.firstChild) {
+        uploadedMapsList.insertBefore(mapItem, uploadedMapsList.firstChild);
+      } else {
+        uploadedMapsList.appendChild(mapItem);
+      }
+    }
+
+    function updateSelectedMapItem(mapId) {
+      // Remove selected class from all items
+      document.querySelectorAll('.uploaded-map-item').forEach(item => {
+        item.classList.remove('selected');
+      });
+      
+      // Add selected class to current map
+      const currentItem = document.querySelector(`[data-map-id="${mapId}"]`);
+      if (currentItem) {
+        currentItem.classList.add('selected');
+      }
+    }
+
+    function updateUploadedMapName(mapId, newName) {
+      // Update in the custom list
+      const mapItem = document.querySelector(`[data-map-id="${mapId}"]`);
+      if (mapItem) {
+        const nameSpan = mapItem.querySelector('.uploaded-map-name');
+        if (nameSpan) {
+          nameSpan.textContent = `📁 ${newName}`;
+        }
+      }
     }
   </script>
 
