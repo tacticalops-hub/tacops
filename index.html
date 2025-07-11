@@ -655,9 +655,55 @@
     .rename-btn:hover {
       background: rgba(0, 170, 255, 0.2);
     }
+
+    /* Map content wrapper - exists only to sync rotation between image and canvas */
+    .map-content {
+      display: inline-block;
+      position: relative;
+      transition: transform 0.3s ease !important;
+    }
+    
+    /* Map rotation classes - applied to .map-content to rotate both image and canvas together */
+    .map-content.rot-90 {
+      transform: rotate(90deg) !important;
+      transform-origin: center center !important;
+      border: 3px dashed #f00 !important; /* DEBUG: show border when rotated */
+      background: rgba(0,255,255,0.08) !important; /* DEBUG: show bg when rotated */
+    }
+    .map-content.rot-180 {
+      transform: rotate(180deg) !important;
+      transform-origin: center center !important;
+      border: 3px dashed #f00 !important; /* DEBUG: show border when rotated */
+      background: rgba(0,255,255,0.08) !important; /* DEBUG: show bg when rotated */
+    }
+    .map-content.rot-270 {
+      transform: rotate(270deg) !important;
+      transform-origin: center center !important;
+      border: 3px dashed #f00 !important; /* DEBUG: show border when rotated */
+      background: rgba(0,255,255,0.08) !important; /* DEBUG: show bg when rotated */
+    }
   </style>
 </head>
 <body>
+  <div id="rotationWarning" style="
+    display: none;
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255, 50, 50, 0.9);
+    color: #fff;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    z-index: 9999;
+    pointer-events: none;
+    user-select: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  ">
+    Rotate back to normal to draw.
+  </div>
   <div class="container">
     <h1>CODM Map Routes</h1>
     <div class="sidebar">
@@ -714,6 +760,7 @@
           <option value="vacant">Vacant</option>
           <option value="zoo">Zoo</option>
         </select>
+        <button id="rotateMapBtn" class="upload-btn" style="margin-top:0.7rem;">⟳ Rotate</button>
       </div>
 
       <div class="upload-section">
@@ -722,6 +769,7 @@
         <button id="uploadBtn" class="upload-btn">📁 Choose Image</button>
         <div id="uploadStatus" class="upload-status"></div>
       </div>
+      <div id="uploadsContainer" style="margin:1rem 0;"></div>
 
       <div class="whiteboard-controls">
         <div style="margin-bottom:0.7rem;">
@@ -776,295 +824,421 @@
     <main>
       <div class="map-entry" id="standoff">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="standoffMapImage" src="standoff-clean.png" alt="Standoff Map">
           <canvas id="standoffDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="firing_range">
         <div class="map-container">
-          <img id="firingRangeMapImage" src="firing_range_labeled.png" alt="Firing Range Map">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
+            <img id="firingRangeMapImage" src="firing_range_labeled.png" alt="Firing Range Map">
           <canvas id="firingRangeDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="zoo" style="display:none;">
         <div class="map-container">
-          <img id="zooMapImage" src="zoo_labeled.png" alt="Zoo Map">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
+            <img id="zooMapImage" src="zoo_labeled.png" alt="Zoo Map">
           <canvas id="zooDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="terminal" style="display:none;">
         <div class="map-container">
-          <img id="terminalMapImage" src="terminal_labeled.png" alt="Terminal Map">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
+            <img id="terminalMapImage" src="terminal_labeled.png" alt="Terminal Map">
           <canvas id="terminalDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="tunisia" style="display:none;">
         <div class="map-container">
-          <img id="tunisiaMapImage" src="tunisia_labeled.png" alt="Tunisia Map">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
+            <img id="tunisiaMapImage" src="tunisia_labeled.png" alt="Tunisia Map">
           <canvas id="tunisiaDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="monastery" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="monasteryMapImage" src="monastery.png" alt="Monastery Map">
           <canvas id="monasteryDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="oasis" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="oasisMapImage" src="oasis.png" alt="Oasis Map">
           <canvas id="oasisDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="rust" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="rustMapImage" src="rust.png" alt="Rust Map">
           <canvas id="rustDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="hacienda" style="display:none;">
         <div class="map-container">
-          <img id="haciendaMapImage" src="hacienda_labeled.png" alt="Hacienda Map">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
+            <img id="haciendaMapImage" src="hacienda_labeled.png" alt="Hacienda Map">
           <canvas id="haciendaDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="highrise" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="highriseMapImage" src="highrise.png" alt="Highrise Map">
           <canvas id="highriseDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="icebreaker" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="icebreakerMapImage" src="icebreaker.png" alt="Icebreaker Map">
           <canvas id="icebreakerDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="takeoff" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="takeoffMapImage" src="takeoff.png" alt="Takeoff Map">
           <canvas id="takeoffDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="vacant" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="vacantMapImage" src="vacant.png" alt="Vacant Map">
           <canvas id="vacantDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="hackney_yard" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="hackneyYardMapImage" src="hackney_yard.png" alt="Hackney Yard Map">
           <canvas id="hackneyYardDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="hovec_sawmill" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="hovecSawmillMapImage" src="hovec_sawmill.png" alt="Hovec Sawmill Map">
           <canvas id="hovecSawmillDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="shipment" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="shipmentMapImage" src="shipment.png" alt="Shipment Map">
           <canvas id="shipmentDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="scrapyard_2019" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="scrapyard2019MapImage" src="scrapyard_2019.png" alt="Scrapyard 2019 Map">
           <canvas id="scrapyard2019DrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="suldal_harbor" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="suldalHarborMapImage" src="suldal_harbor.png" alt="Suldal Harbor Map">
           <canvas id="suldalHarborDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="dome" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="domeMapImage" src="dome.png" alt="Dome Map">
           <canvas id="domeDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="slums" style="display:none;">
         <div class="map-container">
-          <img id="slumsMapImage" src="slums_labeled.png" alt="Slums Map">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
+            <img id="slumsMapImage" src="slums_labeled.png" alt="Slums Map">
           <canvas id="slumsDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="nuketown_russia" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="nuketownRussiaMapImage" src="nuketown_russia.png" alt="Nuketown Russia Map">
           <canvas id="nuketownRussiaDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="meltdown" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="meltdownMapImage" src="meltdown.png" alt="Meltdown Map">
           <canvas id="meltdownDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="summit" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="summitMapImage" src="summit.png" alt="Summit Map">
           <canvas id="summitDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="hijacked" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="hijackedMapImage" src="hijacked.png" alt="Hijacked Map">
           <canvas id="hijackedDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="crash" style="display:none;">
         <div class="map-container">
-          <img id="crashMapImage" src="crash_labeled.png" alt="Crash Map">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
+            <img id="crashMapImage" src="crash_labeled.png" alt="Crash Map">
           <canvas id="crashDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="crossfire" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="crossfireMapImage" src="crossfire.png" alt="Crossfire Map">
           <canvas id="crossfireDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="raid" style="display:none;">
         <div class="map-container">
-          <img id="raidMapImage" src="raid_labeled.png" alt="Raid Map">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
+            <img id="raidMapImage" src="raid_labeled.png" alt="Raid Map">
           <canvas id="raidDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="nuketown" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="nuketownMapImage" src="nuketown.png" alt="Nuketown Map">
           <canvas id="nuketownDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="killhouse" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="killhouseMapImage" src="killhouse.png" alt="Killhouse Map">
           <canvas id="killhouseDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="hardhat" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="hardhatMapImage" src="hardhat.png" alt="Hardhat Map">
           <canvas id="hardhatDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="saloon" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="saloonMapImage" src="saloon.png" alt="Saloon Map">
           <canvas id="saloonDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="pine" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="pineMapImage" src="pine.png" alt="Pine Map">
           <canvas id="pineDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="king" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="kingMapImage" src="king.png" alt="King Map">
           <canvas id="kingDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="docks" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="docksMapImage" src="docks.png" alt="Docks Map">
           <canvas id="docksDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="shoot_house" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="shootHouseMapImage" src="shoot_house.png" alt="Shoot House Map">
           <canvas id="shootHouseDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="cage" style="display:none;">
         <div class="map-container">
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
           <img id="cageMapImage" src="cage.png" alt="Cage Map">
           <canvas id="cageDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="coastal" style="display:none;">
         <div class="map-container">
-          <img id="coastalMapImage" src="coastal_labeled.png" alt="Coastal Map">
-          <canvas id="coastalDrawingCanvas"></canvas>
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
+            <img id="coastalMapImage" src="coastal_labeled.png" alt="Coastal Map">
+            <canvas id="coastalDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="diesel" style="display:none;">
         <div class="map-container">
-          <img id="dieselMapImage" src="diesel_labeled.png" alt="Diesel Map">
-          <canvas id="dieselDrawingCanvas"></canvas>
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
+            <img id="dieselMapImage" src="diesel_labeled.png" alt="Diesel Map">
+            <canvas id="dieselDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="kurohana_metropolis" style="display:none;">
         <div class="map-container">
-          <img id="kurohanaMetropolisMapImage" src="kurohana_metropolis_labeled.png" alt="Kurohana Metropolis Map">
-          <canvas id="kurohanaMetropolisDrawingCanvas"></canvas>
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
+            <img id="kurohanaMetropolisMapImage" src="kurohana_metropolis_labeled.png" alt="Kurohana Metropolis Map">
+            <canvas id="kurohanaMetropolisDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="combine" style="display:none;">
         <div class="map-container">
-          <img id="combineMapImage" src="combine_labeled.png" alt="Combine Map">
-          <canvas id="combineDrawingCanvas"></canvas>
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
+            <img id="combineMapImage" src="combine_labeled.png" alt="Combine Map">
+            <canvas id="combineDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="cheshire_park" style="display:none;">
         <div class="map-container">
-          <img id="cheshireParkMapImage" src="cheshire_park_labeled.png" alt="Cheshire Park Map">
-          <canvas id="cheshireParkDrawingCanvas"></canvas>
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
+            <img id="cheshireParkMapImage" src="cheshire_park_labeled.png" alt="Cheshire Park Map">
+            <canvas id="cheshireParkDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="map-entry" id="khandor_hideout" style="display:none;">
         <div class="map-container">
-          <img id="khandorHideoutMapImage" src="khandor_hideout_labeled.png" alt="Khandor Hideout Map">
-          <canvas id="khandorHideoutDrawingCanvas"></canvas>
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
+            <img id="khandorHideoutMapImage" src="khandor_hideout_labeled.png" alt="Khandor Hideout Map">
+            <canvas id="khandorHideoutDrawingCanvas"></canvas>
+          </div>
         </div>
       </div>
     </main>
@@ -1178,8 +1352,11 @@
       
       mapEntry.innerHTML = `
         <div class="map-container">
-          <img id="${mapId}MapImage" src="${mapData.base64}" alt="${mapData.name} Map">
-          <canvas id="${mapId}DrawingCanvas"></canvas>
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
+            <img id="${mapId}MapImage" src="${mapData.base64}" alt="${mapData.name} Map">
+            <canvas id="${mapId}DrawingCanvas"></canvas>
+          </div>
         </div>
       `;
       
@@ -1252,16 +1429,16 @@
             console.log('SW registered: ', registration);
             // Prompt user to reload when a new SW is available (only on production)
             if (!isLocalhost) {
-              registration.onupdatefound = () => {
-                const newWorker = registration.installing;
-                newWorker.onstatechange = () => {
-                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    if (confirm('A new version is available. Reload now?')) {
-                      window.location.reload();
-                    }
+            registration.onupdatefound = () => {
+              const newWorker = registration.installing;
+              newWorker.onstatechange = () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  if (confirm('A new version is available. Reload now?')) {
+                    window.location.reload();
                   }
-                };
+                }
               };
+            };
             }
           })
           .catch((registrationError) => {
@@ -1447,7 +1624,52 @@
     // Drawing event handlers
     let path = [];
     let drawingColor = currentRouteColor;
+    
+    // Helper function to check if drawing is allowed (rotation must be 0 degrees)
+    function isDrawingAllowed() {
+      // Find the currently visible map entry
+      let visibleMapEntry = null;
+      const allMapEntries = document.querySelectorAll('.map-entry');
+      
+      for (const entry of allMapEntries) {
+        if (entry.style.display !== 'none' && entry.offsetParent !== null) {
+          visibleMapEntry = entry;
+          break;
+        }
+      }
+      
+      if (!visibleMapEntry) {
+        return false;
+      }
+      
+      // Check if the map content has rotation at 0 degrees
+      const mapContent = visibleMapEntry.querySelector('.map-content');
+      if (!mapContent) {
+        return false;
+      }
+      
+      const rotation = parseInt(mapContent.getAttribute('data-rot') || '0', 10);
+      return rotation === 0;
+    }
+    
+    // Helper function to show rotation warning
+    function showRotationWarning() {
+      const warning = document.getElementById("rotationWarning");
+      if (!warning) return;
+      warning.style.display = "block";
+      clearTimeout(warning._timeout);
+      warning._timeout = setTimeout(() => {
+        warning.style.display = "none";
+      }, 3000);
+    }
+    
     function startDrawing(e) {
+      // Check if drawing is allowed (rotation must be 0 degrees)
+      if (!isDrawingAllowed()) {
+        showRotationWarning();
+        return;
+      }
+      
       isDrawing = true;
       const canvas = e.target;
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -1468,6 +1690,14 @@
     }
     function draw(e) {
       if (!isDrawing) return;
+      
+      // Check if drawing is still allowed (rotation must be 0 degrees)
+      if (!isDrawingAllowed()) {
+        showRotationWarning();
+        isDrawing = false;
+        return;
+      }
+      
       const canvas = e.target;
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
       ctx.strokeStyle = drawingColor;
@@ -1561,11 +1791,11 @@
         if (saveButton) {
             saveButton.addEventListener('click', saveBoard);
         }
-        // Wire up Undo/Redo buttons
-        document.getElementById('undoBtn').onclick = undoDrawing;
-        document.getElementById('redoBtn').onclick = redoDrawing;
-        // Load saved boards
-        updateBoardList();
+            // Wire up Undo/Redo buttons
+    document.getElementById('undoBtn').onclick = undoDrawing;
+    document.getElementById('redoBtn').onclick = redoDrawing;
+    // Load saved boards
+    updateBoardList();
         
         // Load uploaded maps from localStorage
         loadUploadedMaps();
@@ -1598,22 +1828,22 @@
             }
           });
         }
-        
-        // Handle URL parameters for PWA shortcuts
-        const urlParams = new URLSearchParams(window.location.search);
-        const mapParam = urlParams.get('map');
-        if (mapParam && mapParam !== 'standoff') {
-          // Switch to the specified map
-          setTimeout(() => {
-            switchMap(mapParam);
-            // Update the select dropdown
-            const mapSelect = document.getElementById('sidebarMapSelect');
-            if (mapSelect) {
-              mapSelect.value = mapParam;
-            }
-          }, 100);
+    
+    // Handle URL parameters for PWA shortcuts
+    const urlParams = new URLSearchParams(window.location.search);
+    const mapParam = urlParams.get('map');
+    if (mapParam && mapParam !== 'standoff') {
+      // Switch to the specified map
+      setTimeout(() => {
+        switchMap(mapParam);
+        // Update the select dropdown
+        const mapSelect = document.getElementById('sidebarMapSelect');
+        if (mapSelect) {
+          mapSelect.value = mapParam;
         }
-      };
+      }, 100);
+    }
+    };
 
     function setupCanvas(canvas) {
         if (!canvas) return;
@@ -1651,10 +1881,10 @@
             canvas.style.height = height + 'px';
             canvas.style.left = '0px';
             canvas.style.top = '0px';
-            attachEventListeners();
-            redraw();
+              attachEventListeners();
+              redraw();
+            }
           }
-        }
         // Wait for image to load before initial resize
         const mapImg = canvas.parentElement.querySelector('img');
         if (mapImg) {
@@ -1894,6 +2124,12 @@
 
     // Add these functions to handle the new buttons
     function addMarkerGlobal() {
+      // Check if drawing is allowed (rotation must be 0 degrees)
+      if (!isDrawingAllowed()) {
+        showRotationWarning();
+        return;
+      }
+      
       const canvas = getActiveCanvas();
       const mapContainer = canvas ? canvas.parentElement : null;
       if (!canvas || !mapContainer) return;
@@ -2005,6 +2241,12 @@
       marker.style.color = getContrastYIQ(markerColor);
       // Drag logic (mouse)
       marker.addEventListener('dragstart', function(e) {
+        // Check if drawing is allowed (rotation must be 0 degrees)
+        if (!isDrawingAllowed()) {
+          showRotationWarning();
+          e.preventDefault();
+          return;
+        }
         e.dataTransfer.setData('text/plain', '');
         this.style.opacity = '0.5';
         marker._dragStartX = e.clientX;
@@ -2013,6 +2255,12 @@
         marker._origTop = parseFloat(marker.style.top);
       });
       marker.addEventListener('dragend', function(e) {
+        // Check if drawing is allowed (rotation must be 0 degrees)
+        if (!isDrawingAllowed()) {
+          showRotationWarning();
+          this.style.opacity = '1';
+          return;
+        }
         this.style.opacity = '1';
         const mapContainer = marker.parentElement;
         const rect = mapContainer.getBoundingClientRect();
@@ -2036,6 +2284,11 @@
       let touchDragging = false;
       let touchStartX, touchStartY, origLeft, origTop;
       marker.addEventListener('touchstart', function(e) {
+        // Check if drawing is allowed (rotation must be 0 degrees)
+        if (!isDrawingAllowed()) {
+          showRotationWarning();
+          return;
+        }
         if (e.touches.length !== 1) return;
         touchDragging = true;
         touchStartX = e.touches[0].clientX;
@@ -2046,6 +2299,13 @@
       }, { passive: false });
       marker.addEventListener('touchmove', function(e) {
         if (!touchDragging || e.touches.length !== 1) return;
+        // Check if drawing is allowed (rotation must be 0 degrees)
+        if (!isDrawingAllowed()) {
+          showRotationWarning();
+          touchDragging = false;
+          marker.style.opacity = '1';
+          return;
+        }
         e.preventDefault();
         const mapContainer = marker.parentElement;
         const rect = mapContainer.getBoundingClientRect();
@@ -2061,6 +2321,11 @@
         if (!touchDragging) return;
         touchDragging = false;
         marker.style.opacity = '1';
+        // Check if drawing is allowed (rotation must be 0 degrees)
+        if (!isDrawingAllowed()) {
+          showRotationWarning();
+          return;
+        }
         const mapContainer = marker.parentElement;
         const rect = mapContainer.getBoundingClientRect();
         const left = parseFloat(marker.style.left) / 100;
@@ -2079,6 +2344,11 @@
       }, { passive: false });
       // Double-click to edit
       marker.addEventListener('dblclick', function() {
+        // Check if drawing is allowed (rotation must be 0 degrees)
+        if (!isDrawingAllowed()) {
+          showRotationWarning();
+          return;
+        }
         const newText = prompt('Edit marker text:', marker.textContent);
         if (newText) {
           marker.textContent = newText;
@@ -2101,6 +2371,11 @@
       // Right-click to delete
       marker.addEventListener('contextmenu', function(e) {
         e.preventDefault();
+        // Check if drawing is allowed (rotation must be 0 degrees)
+        if (!isDrawingAllowed()) {
+          showRotationWarning();
+          return;
+        }
         const mapContainer = marker.parentElement;
         const markers = getCurrentMarkers();
         const idx = Array.from(mapContainer.querySelectorAll('.text-marker')).indexOf(marker);
@@ -2355,6 +2630,16 @@
     }
 
     // Image upload and processing functions
+    function isStorageNearLimit(newDataSizeBytes = 0) {
+      let total = 0;
+      for (let key in localStorage) {
+        if (localStorage.hasOwnProperty(key)) {
+          total += ((localStorage[key].length + key.length) * 2); // bytes
+        }
+      }
+      return (total + newDataSizeBytes) > 4.9 * 1024 * 1024; // ~5MB
+    }
+
     function resizeImage(file) {
       return new Promise((resolve) => {
         const canvas = document.createElement('canvas');
@@ -2405,8 +2690,11 @@
       
       mapEntry.innerHTML = `
         <div class="map-container">
-          <img id="${mapId}MapImage" src="${base64Data}" alt="${mapName} Map">
-          <canvas id="${mapId}DrawingCanvas"></canvas>
+          <!-- .map-content wrapper exists only to sync rotation between image and canvas -->
+          <div class="map-content">
+            <img id="${mapId}MapImage" src="${base64Data}" alt="${mapName} Map">
+            <canvas id="${mapId}DrawingCanvas"></canvas>
+          </div>
         </div>
       `;
       
@@ -2445,6 +2733,14 @@
       
       resizeImage(file)
         .then(base64Data => {
+          // Storage limit check before saving
+          if (isStorageNearLimit(base64Data.length * 2)) {
+            alert('Storage is full. Please delete older uploads to continue.');
+            statusDiv.textContent = '';
+            statusDiv.className = 'upload-status';
+            document.getElementById('imageUpload').value = '';
+            return;
+          }
           const mapId = addUploadedMap(base64Data, file.name);
           
           // Switch to the uploaded map
@@ -2518,9 +2814,46 @@
       mapNameSpan.textContent = `📁 ${mapName}`;
       
       const renameBtn = createRenameButton(mapId);
+      // Create Delete button
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'rename-btn';
+      deleteBtn.innerHTML = '🗑️';
+      deleteBtn.title = 'Delete this map';
+      deleteBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (confirm('Delete this uploaded map?')) {
+          // Remove from uploadedMaps
+          delete uploadedMaps[mapId];
+          // Remove drawing and marker state
+          delete mapDrawings[mapId];
+          delete mapMarkers[mapId];
+          // Remove map entry from DOM
+          const mapEntry = document.getElementById(mapId);
+          if (mapEntry) mapEntry.remove();
+          // Save to localStorage
+          saveUploadedMaps();
+          // Re-render uploaded maps list
+          renderUploadedMapsList();
+          // If the deleted map was selected, switch to the first built-in map
+          if (currentMap === mapId) {
+            const mapSelector = document.getElementById('sidebarMapSelect');
+            if (mapSelector && mapSelector.options.length > 0) {
+              for (let i = 0; i < mapSelector.options.length; i++) {
+                if (!mapSelector.options[i].value.startsWith('uploaded_')) {
+                  switchMap(mapSelector.options[i].value);
+                  mapSelector.value = mapSelector.options[i].value;
+                  break;
+                }
+              }
+            }
+          }
+        }
+      };
       
       mapItem.appendChild(mapNameSpan);
       mapItem.appendChild(renameBtn);
+      mapItem.appendChild(deleteBtn);
       
       // Add click handler to switch to this map
       mapItem.addEventListener('click', (e) => {
@@ -2536,6 +2869,16 @@
       } else {
         uploadedMapsList.appendChild(mapItem);
       }
+    }
+
+    // Helper to re-render the uploaded maps list
+    function renderUploadedMapsList() {
+      const uploadedMapsList = document.getElementById('uploadedMapsList');
+      if (!uploadedMapsList) return;
+      uploadedMapsList.innerHTML = '';
+      Object.keys(uploadedMaps).forEach(mapId => {
+        addToUploadedMapsList(mapId, uploadedMaps[mapId].name);
+      });
     }
 
     function updateSelectedMapItem(mapId) {
@@ -2561,6 +2904,112 @@
         }
       }
     }
+
+    // Render uploaded images with delete buttons (for keys starting with 'upload_')
+    function renderUploads() {
+      const container = document.getElementById('uploadsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+      let found = false;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('upload_')) {
+          found = true;
+          const dataUrl = localStorage.getItem(key);
+          const wrapper = document.createElement('div');
+          wrapper.style.display = 'flex';
+          wrapper.style.alignItems = 'center';
+          wrapper.style.marginBottom = '0.5rem';
+          const img = document.createElement('img');
+          img.src = dataUrl;
+          img.alt = key;
+          img.style.maxWidth = '60px';
+          img.style.maxHeight = '60px';
+          img.style.marginRight = '0.5rem';
+          img.style.borderRadius = '6px';
+          img.style.border = '1px solid #333';
+          const delBtn = document.createElement('button');
+          delBtn.textContent = '🗑️ Delete';
+          delBtn.style.marginLeft = '0.5rem';
+          delBtn.style.background = '#222';
+          delBtn.style.color = '#ff4444';
+          delBtn.style.border = '1px solid #444';
+          delBtn.style.borderRadius = '5px';
+          delBtn.style.cursor = 'pointer';
+          delBtn.onclick = function() {
+            localStorage.removeItem(key);
+            renderUploads();
+          };
+          wrapper.appendChild(img);
+          wrapper.appendChild(delBtn);
+          container.appendChild(wrapper);
+        }
+      }
+      if (!found) {
+        container.innerHTML = '<div style="color:#888;font-size:0.95em;">No uploaded images found.</div>';
+      }
+    }
+
+    // Call renderUploads on page load
+    document.addEventListener('DOMContentLoaded', renderUploads);
+
+    // Robust map rotation logic - targets .map-content to rotate both image and canvas together
+    function rotateActiveMap() {
+      // Find the currently visible map entry by checking all map entries
+      let visibleMapEntry = null;
+      const allMapEntries = document.querySelectorAll('.map-entry');
+      
+      for (const entry of allMapEntries) {
+        if (entry.style.display !== 'none' && entry.offsetParent !== null) {
+          visibleMapEntry = entry;
+          break;
+        }
+      }
+      
+      if (!visibleMapEntry) {
+        console.warn('No visible map entry found for rotation');
+        return;
+      }
+      
+      // Get the map content wrapper within the visible map entry - this wraps both image and canvas
+      const activeMapContent = visibleMapEntry.querySelector('.map-content');
+      if (!activeMapContent) {
+        console.warn('No map content wrapper found in visible map entry:', visibleMapEntry.id);
+        return;
+      }
+      
+      // Remove any previous rotation classes
+      activeMapContent.classList.remove('rot-90', 'rot-180', 'rot-270');
+      
+      // Get current rotation from data attribute
+      let rot = parseInt(activeMapContent.getAttribute('data-rot') || '0', 10);
+      rot = (rot + 90) % 360;
+      
+      // Apply the correct rotation class to sync image and canvas rotation
+      if (rot === 90) {
+        activeMapContent.classList.add('rot-90');
+      } else if (rot === 180) {
+        activeMapContent.classList.add('rot-180');
+      } else if (rot === 270) {
+        activeMapContent.classList.add('rot-270');
+      }
+      
+      // Save current rotation
+      activeMapContent.setAttribute('data-rot', rot);
+      
+      // Debug log
+      console.log('Rotated map to', rot, 'degrees');
+      console.log('Active map content:', activeMapContent);
+      console.log('Visible map entry ID:', visibleMapEntry.id);
+    }
+
+    // Attach rotate handler after DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      const rotateBtn = document.getElementById('rotateMapBtn');
+      if (rotateBtn) {
+        rotateBtn.onclick = rotateActiveMap;
+      }
+    });
   </script>
 
   <!-- On DOMContentLoaded, visually indicate the default selected marker color -->
