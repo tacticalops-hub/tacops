@@ -1366,10 +1366,21 @@
       // Add to custom uploaded maps list
       addToUploadedMapsList(mapId, mapData.name);
       
-      // Setup canvas for the restored map
+      // Setup canvas for the restored map with improved timing
       const canvas = document.getElementById(`${mapId}DrawingCanvas`);
       if (canvas) {
         setupCanvas(canvas);
+        // Additional delay for restored uploaded maps to ensure proper rendering
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            const mapImg = document.getElementById(`${mapId}MapImage`);
+            if (mapImg && mapImg.complete) {
+              // Force a resize after the image is fully loaded
+              const resizeEvent = new Event('resize');
+              window.dispatchEvent(resizeEvent);
+            }
+          }, 100);
+        });
       }
     }
 
@@ -1847,6 +1858,7 @@
 
     function setupCanvas(canvas) {
         if (!canvas) return;
+        
         function attachEventListeners() {
           // Remove existing listeners to prevent duplicates
           canvas.removeEventListener('mousedown', startDrawing);
@@ -1867,6 +1879,7 @@
           canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
           canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
         }
+        
         function resizeCanvas() {
           const parent = canvas.parentElement;
           const mapImg = parent.querySelector('img');
@@ -1881,22 +1894,33 @@
             canvas.style.height = height + 'px';
             canvas.style.left = '0px';
             canvas.style.top = '0px';
-              attachEventListeners();
-              redraw();
-            }
+            attachEventListeners();
+            redraw();
           }
+        }
+        
+        // Enhanced resize function with requestAnimationFrame and timeout
+        function resizeCanvasWithDelay() {
+          requestAnimationFrame(() => {
+            setTimeout(resizeCanvas, 50);
+          });
+        }
+        
         // Wait for image to load before initial resize
         const mapImg = canvas.parentElement.querySelector('img');
         if (mapImg) {
           if (mapImg.complete && mapImg.naturalWidth > 0) {
+            // For preloaded maps, use immediate resize
             resizeCanvas();
           } else {
+            // For uploaded maps, use delayed resize to ensure proper rendering
             mapImg.onload = function() {
-              setTimeout(resizeCanvas, 100);
+              resizeCanvasWithDelay();
             };
           }
         }
-        window.addEventListener('resize', resizeCanvas);
+        
+        window.addEventListener('resize', resizeCanvasWithDelay);
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         ctx.strokeStyle = '#0af';
         ctx.lineWidth = 2;
@@ -1961,6 +1985,20 @@
           // Trigger the resize function
           const resizeEvent = new Event('resize');
           window.dispatchEvent(resizeEvent);
+          
+          // Additional delay for uploaded maps to ensure proper rendering
+          if (mapId.startsWith('uploaded_')) {
+            requestAnimationFrame(() => {
+              setTimeout(() => {
+                const mapImg = activeCanvas.parentElement.querySelector('img');
+                if (mapImg && mapImg.complete) {
+                  // Force another resize for uploaded maps
+                  const resizeEvent = new Event('resize');
+                  window.dispatchEvent(resizeEvent);
+                }
+              }, 50);
+            });
+          }
           
           // Ensure drawing is ready
           setTimeout(() => {
@@ -2710,10 +2748,21 @@
         base64: base64Data
       };
       
-      // Setup canvas for the new map
+      // Setup canvas for the new map with improved timing for uploaded maps
       const canvas = document.getElementById(`${mapId}DrawingCanvas`);
       if (canvas) {
         setupCanvas(canvas);
+        // Additional delay for uploaded maps to ensure proper rendering
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            const mapImg = document.getElementById(`${mapId}MapImage`);
+            if (mapImg && mapImg.complete) {
+              // Force a resize after the image is fully loaded
+              const resizeEvent = new Event('resize');
+              window.dispatchEvent(resizeEvent);
+            }
+          }, 100);
+        });
       }
       
       // Add to drawing state
