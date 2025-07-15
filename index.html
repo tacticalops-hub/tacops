@@ -1266,6 +1266,10 @@
   <button id="update-btn" style="display:none;position:fixed;top:10px;right:10px;z-index:9999;background:#0af;color:#fff;font-weight:bold;padding:1rem 2rem;border:none;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.2);cursor:pointer;">Update Available - Click to Refresh</button>
 
   <script>
+
+    <!-- Hello, World temp -->
+    alert("Hello, World!")
+
     // Global variables
     let canvas, ctx, mapImg;
     let isDrawing = false;
@@ -1375,9 +1379,38 @@
           setTimeout(() => {
             const mapImg = document.getElementById(`${mapId}MapImage`);
             if (mapImg && mapImg.complete) {
-              // Force a resize after the image is fully loaded
-              const resizeEvent = new Event('resize');
-              window.dispatchEvent(resizeEvent);
+              // Trigger a single resize for the restored map
+              const canvas = document.getElementById(`${mapId}DrawingCanvas`);
+              if (canvas && canvas.dataset.resized !== 'true') {
+                // Direct resize call with debouncing
+                if (canvas.resizeTimeout) {
+                  clearTimeout(canvas.resizeTimeout);
+                }
+                canvas.resizeTimeout = setTimeout(() => {
+                  if (canvas.dataset.resized !== 'true') {
+                    canvas.dataset.resized = 'true';
+                    const parent = canvas.parentElement;
+                    const img = parent.querySelector('img');
+                    if (img && img.complete && img.naturalWidth > 0) {
+                      const rect = img.getBoundingClientRect();
+                      const width = Math.round(rect.width);
+                      const height = Math.round(rect.height);
+                      if (width > 0 && height > 0) {
+                        canvas.width = width;
+                        canvas.height = height;
+                        canvas.style.width = width + 'px';
+                        canvas.style.height = height + 'px';
+                        canvas.style.left = '0px';
+                        canvas.style.top = '0px';
+                        redraw();
+                      }
+                    }
+                    setTimeout(() => {
+                      canvas.dataset.resized = 'false';
+                    }, 100);
+                  }
+                }, 50);
+              }
             }
           }, 100);
         });
@@ -1880,7 +1913,15 @@
           canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
         }
         
+        // Debounce timeout for resize operations
+        let resizeTimeout = null;
+        
         function resizeCanvas() {
+          // Prevent multiple resize calls for the same canvas
+          if (canvas.dataset.resized === 'true') {
+            return;
+          }
+          
           const parent = canvas.parentElement;
           const mapImg = parent.querySelector('img');
           if (mapImg && mapImg.complete && mapImg.naturalWidth > 0) {
@@ -1888,6 +1929,10 @@
             const width = Math.round(mapRect.width);
             const height = Math.round(mapRect.height);
             if (width === 0 || height === 0) return; // Skip if not visible
+            
+            // Set flag to prevent multiple resizes
+            canvas.dataset.resized = 'true';
+            
             canvas.width = width;
             canvas.height = height;
             canvas.style.width = width + 'px';
@@ -1896,13 +1941,26 @@
             canvas.style.top = '0px';
             attachEventListeners();
             redraw();
+            
+            // Reset flag after a short delay to allow future resizes if needed
+            setTimeout(() => {
+              canvas.dataset.resized = 'false';
+            }, 100);
           }
         }
         
-        // Enhanced resize function with requestAnimationFrame and timeout
+        // Debounced resize function
+        function debouncedResizeCanvas() {
+          if (resizeTimeout) {
+            clearTimeout(resizeTimeout);
+          }
+          resizeTimeout = setTimeout(resizeCanvas, 50);
+        }
+        
+        // Enhanced resize function with requestAnimationFrame and debouncing
         function resizeCanvasWithDelay() {
           requestAnimationFrame(() => {
-            setTimeout(resizeCanvas, 50);
+            debouncedResizeCanvas();
           });
         }
         
@@ -1920,7 +1978,7 @@
           }
         }
         
-        window.addEventListener('resize', resizeCanvasWithDelay);
+        window.addEventListener('resize', debouncedResizeCanvas);
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         ctx.strokeStyle = '#0af';
         ctx.lineWidth = 2;
@@ -1982,19 +2040,19 @@
       setTimeout(() => {
         const activeCanvas = getActiveCanvas();
         if (activeCanvas) {
-          // Trigger the resize function
-          const resizeEvent = new Event('resize');
-          window.dispatchEvent(resizeEvent);
+          // Use debounced resize instead of forcing resize events
+          if (activeCanvas.dataset.resized !== 'true') {
+            debouncedResizeCanvas();
+          }
           
           // Additional delay for uploaded maps to ensure proper rendering
           if (mapId.startsWith('uploaded_')) {
             requestAnimationFrame(() => {
               setTimeout(() => {
                 const mapImg = activeCanvas.parentElement.querySelector('img');
-                if (mapImg && mapImg.complete) {
-                  // Force another resize for uploaded maps
-                  const resizeEvent = new Event('resize');
-                  window.dispatchEvent(resizeEvent);
+                if (mapImg && mapImg.complete && activeCanvas.dataset.resized !== 'true') {
+                  // Use debounced resize for uploaded maps
+                  debouncedResizeCanvas();
                 }
               }, 50);
             });
@@ -2757,9 +2815,38 @@
           setTimeout(() => {
             const mapImg = document.getElementById(`${mapId}MapImage`);
             if (mapImg && mapImg.complete) {
-              // Force a resize after the image is fully loaded
-              const resizeEvent = new Event('resize');
-              window.dispatchEvent(resizeEvent);
+              // Trigger a single resize for the uploaded map
+              const canvas = document.getElementById(`${mapId}DrawingCanvas`);
+              if (canvas && canvas.dataset.resized !== 'true') {
+                // Direct resize call with debouncing
+                if (canvas.resizeTimeout) {
+                  clearTimeout(canvas.resizeTimeout);
+                }
+                canvas.resizeTimeout = setTimeout(() => {
+                  if (canvas.dataset.resized !== 'true') {
+                    canvas.dataset.resized = 'true';
+                    const parent = canvas.parentElement;
+                    const img = parent.querySelector('img');
+                    if (img && img.complete && img.naturalWidth > 0) {
+                      const rect = img.getBoundingClientRect();
+                      const width = Math.round(rect.width);
+                      const height = Math.round(rect.height);
+                      if (width > 0 && height > 0) {
+                        canvas.width = width;
+                        canvas.height = height;
+                        canvas.style.width = width + 'px';
+                        canvas.style.height = height + 'px';
+                        canvas.style.left = '0px';
+                        canvas.style.top = '0px';
+                        redraw();
+                      }
+                    }
+                    setTimeout(() => {
+                      canvas.dataset.resized = 'false';
+                    }, 100);
+                  }
+                }, 50);
+              }
             }
           }, 100);
         });
@@ -3097,5 +3184,6 @@
   </script>
 </body>
 </html>
+
 
 
