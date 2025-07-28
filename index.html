@@ -1267,8 +1267,6 @@
 
   <script>
 
-    <!-- Hello, World temp -->
-    alert("Hello, World!")
 
     // Global variables
     let canvas, ctx, mapImg;
@@ -1949,18 +1947,18 @@
           }
         }
         
-        // Debounced resize function
-        function debouncedResizeCanvas() {
+        // Throttle rapid resize events
+        function handleResize() {
           if (resizeTimeout) {
             clearTimeout(resizeTimeout);
           }
           resizeTimeout = setTimeout(resizeCanvas, 50);
         }
-        
-        // Enhanced resize function with requestAnimationFrame and debouncing
+
+        // Enhanced resize function with requestAnimationFrame
         function resizeCanvasWithDelay() {
           requestAnimationFrame(() => {
-            debouncedResizeCanvas();
+            handleResize();
           });
         }
         
@@ -1978,7 +1976,7 @@
           }
         }
         
-        window.addEventListener('resize', debouncedResizeCanvas);
+        window.addEventListener('resize', handleResize);
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         ctx.strokeStyle = '#0af';
         ctx.lineWidth = 2;
@@ -2040,9 +2038,9 @@
       setTimeout(() => {
         const activeCanvas = getActiveCanvas();
         if (activeCanvas) {
-          // Use debounced resize instead of forcing resize events
+          // Trigger the resize handler attached in setupCanvas
           if (activeCanvas.dataset.resized !== 'true') {
-            debouncedResizeCanvas();
+            window.dispatchEvent(new Event('resize'));
           }
           
           // Additional delay for uploaded maps to ensure proper rendering
@@ -2051,8 +2049,8 @@
               setTimeout(() => {
                 const mapImg = activeCanvas.parentElement.querySelector('img');
                 if (mapImg && mapImg.complete && activeCanvas.dataset.resized !== 'true') {
-                  // Use debounced resize for uploaded maps
-                  debouncedResizeCanvas();
+                  // Use the global resize handler for uploaded maps
+                  window.dispatchEvent(new Event('resize'));
                 }
               }, 50);
             });

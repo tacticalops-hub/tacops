@@ -9,6 +9,13 @@ const RENDER_INTERVAL = 16; // ~60fps
 const PATH_OPTIMIZATION_THRESHOLD = 2; // Minimum distance between points
 const MARKER_UPDATE_THROTTLE = 100; // ms between marker updates
 
+// Canvas related elements referenced across functions
+// will be assigned after the DOM loads
+let canvas;
+let ctx;
+let mapTitle;
+let boardSelect;
+
 // Optimize path by reducing points
 function optimizePath(points) {
   if (points.length <= 2) return points;
@@ -306,10 +313,11 @@ function setupMarkerDrag(marker) {
 
 // Initialize canvas
 window.onload = function () {
-  const canvas = document.getElementById('drawingCanvas');
-  const ctx = canvas.getContext('2d');
-  const mapTitle = document.getElementById('mapTitle');
-  const boardSelect = document.getElementById('savedBoards');
+  // Assign the previously declared global variables
+  canvas = document.getElementById('drawingCanvas');
+  ctx = canvas.getContext('2d');
+  mapTitle = document.getElementById('mapTitle');
+  boardSelect = document.getElementById('savedBoards');
 
   ctx.strokeStyle = '#0af';
   ctx.lineWidth = 2;
