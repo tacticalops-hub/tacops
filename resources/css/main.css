@@ -109,6 +109,15 @@
       color: #000;
     }
 
+    .marker-color-btn,
+    .route-color-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      cursor: pointer;
+    }
+
     main {
       padding: 2rem;
       margin-left: 240px;
