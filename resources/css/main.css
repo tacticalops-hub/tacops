@@ -1,8 +1,7 @@
-  <style>
     body {
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
+      font-family: "Segoe UI", Roboto, Helvetica, sans-serif;
       display: flex;
       min-height: 100vh;
       background-color: #111;
@@ -11,7 +10,7 @@
     }
 
     .sidebar {
-      width: 220px;
+      width: 260px;
       background-color: #1a1a1a;
       padding: 1rem;
       height: 100vh;
@@ -27,6 +26,20 @@
       max-height: 100vh !important;
     }
 
+    .rightbar {
+      width: 260px;
+      background-color: #1a1a1a;
+      padding: 1rem;
+      height: 100vh;
+      box-sizing: border-box;
+      border-left: 1px solid #333;
+      position: fixed;
+      top: 0;
+      right: 0;
+      z-index: 100;
+      overflow-y: auto !important;
+    }
+
     .sidebar h2 {
       font-size: 1.3rem;
       margin-top: 0;
@@ -35,7 +48,7 @@
     }
 
     .map-selector {
-      width: 220px;
+      width: 260px;
       background: #181c24;
       border-radius: 12px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.18);
@@ -120,8 +133,9 @@
 
     main {
       padding: 2rem;
-      margin-left: 240px;
-      width: calc(100% - 240px);
+      margin-left: 260px;
+      margin-right: 260px;
+      width: calc(100% - 520px);
       box-sizing: border-box;
     }
 
@@ -170,7 +184,7 @@
     }
 
     /* Override mobile canvas sizing to allow JavaScript control */
-    @media (max-width: 768px) {
+@media (max-width: 768px) {
       .map-container canvas {
         width: auto !important;
         height: auto !important;
@@ -233,15 +247,15 @@
       outline-offset: 2px;
     }
 
-    footer {
-      background-color: #222;
+      footer {
+        background-color: #222;
       padding: 1rem;
       text-align: center;
       font-size: 0.9rem;
       position: fixed;
       bottom: 0;
-      left: 220px;
-      right: 0;
+      left: 260px;
+      right: 260px;
     }
 
     .keyboard-instructions {
@@ -306,6 +320,13 @@
         overflow-y: auto !important;
         max-height: 100vh !important;
       }
+      footer {
+        left: 0 !important;
+        right: 0 !important;
+      }
+      .rightbar {
+        display: none !important;
+      }
       .sidebar.open {
         transform: translateX(0) !important;
       }
@@ -338,6 +359,7 @@
       }
       main {
         margin-left: 0 !important;
+        margin-right: 0 !important;
         width: 100vw !important;
         padding: 0 !important;
         position: relative;
@@ -510,7 +532,7 @@
     }
 
     .upload-section {
-      width: 220px;
+      width: 260px;
       background: #181c24;
       border-radius: 12px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.18);
@@ -656,4 +678,3 @@
       border: 3px dashed #f00 !important; /* DEBUG: show border when rotated */
       background: rgba(0,255,255,0.08) !important; /* DEBUG: show bg when rotated */
     }
-  </style>
