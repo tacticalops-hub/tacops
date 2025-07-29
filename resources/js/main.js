@@ -8,6 +8,34 @@
     // Color state
     let currentRouteColor = '#0af';
     let currentMarkerColor = '#0af';
+
+    // Utility to get contrasting text color for a given hex background
+    function getContrastYIQ(hexcolor) {
+      hexcolor = hexcolor.replace('#', '');
+      if (hexcolor.length === 3) {
+        hexcolor = hexcolor[0] + hexcolor[0] + hexcolor[1] + hexcolor[1] + hexcolor[2] + hexcolor[2];
+      }
+      const r = parseInt(hexcolor.substr(0, 2), 16);
+      const g = parseInt(hexcolor.substr(2, 2), 16);
+      const b = parseInt(hexcolor.substr(4, 2), 16);
+      const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+      return yiq >= 128 ? '#111' : '#fff';
+    }
+
+    // Update Add Marker buttons (sidebar and FAB) to reflect the current color
+    function updateAddMarkerButtons() {
+      const sidebarBtn = document.getElementById('sidebarAddMarkerBtn');
+      const fabBtn = document.getElementById('fabAddMarker');
+      const contrast = getContrastYIQ(currentMarkerColor);
+      if (sidebarBtn) {
+        sidebarBtn.style.background = currentMarkerColor;
+        sidebarBtn.style.color = contrast;
+      }
+      if (fabBtn) {
+        fabBtn.style.background = currentMarkerColor;
+        fabBtn.style.color = contrast;
+      }
+    }
     
     // Upload functionality
     let uploadedMaps = {};
@@ -1051,17 +1079,6 @@
       const markerColor = color || '#0af';
       marker.style.background = markerColor;
       // Set marker text color for contrast
-      function getContrastYIQ(hexcolor) {
-        hexcolor = hexcolor.replace('#', '');
-        if (hexcolor.length === 3) {
-          hexcolor = hexcolor[0]+hexcolor[0]+hexcolor[1]+hexcolor[1]+hexcolor[2]+hexcolor[2];
-        }
-        const r = parseInt(hexcolor.substr(0,2),16);
-        const g = parseInt(hexcolor.substr(2,2),16);
-        const b = parseInt(hexcolor.substr(4,2),16);
-        const yiq = ((r*299)+(g*587)+(b*114))/1000;
-        return (yiq >= 128) ? '#111' : '#fff';
-      }
       marker.style.color = getContrastYIQ(markerColor);
       // Drag logic (mouse)
       marker.addEventListener('dragstart', function(e) {
@@ -1322,6 +1339,7 @@
           currentMarkerColor = btn.getAttribute('data-color');
           markerBtns.forEach(b => b.style.outline = 'none');
           btn.style.outline = `2px solid ${currentMarkerColor}`;
+          updateAddMarkerButtons();
         });
       });
       // Set default outline on page load
@@ -1330,6 +1348,7 @@
           btn.style.outline = `2px solid ${currentMarkerColor}`;
         }
       });
+      updateAddMarkerButtons();
     });
 
     // Ensure FAB/mobile Add Marker also uses the correct color
