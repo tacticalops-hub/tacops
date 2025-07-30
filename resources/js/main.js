@@ -36,6 +36,87 @@
         fabBtn.style.color = contrast;
       }
     }
+
+    // ----- Rotation utilities -----
+    function getRotation(element) {
+      if (!element) return 0;
+      const mapContent = element.querySelector('.map-content') || element;
+      return parseInt(mapContent.getAttribute('data-rot') || '0', 10);
+    }
+
+    function rotatePoint(x, y, rotation) {
+      const rad = rotation * Math.PI / 180;
+      const cos = Math.cos(rad);
+      const sin = Math.sin(rad);
+      const cx = 0.5;
+      const cy = 0.5;
+      const dx = x - cx;
+      const dy = y - cy;
+      return {
+        x: dx * cos - dy * sin + cx,
+        y: dx * sin + dy * cos + cy
+      };
+    }
+
+    // Convert event coordinates to canvas coordinates accounting for rotation
+    function getCanvasCoords(e, canvas) {
+      const rect = canvas.getBoundingClientRect();
+      let clientX, clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      let x = (clientX - rect.left) / rect.width;
+      let y = (clientY - rect.top) / rect.height;
+      const rot = getRotation(canvas.parentElement);
+      if (rot) {
+        const pt = rotatePoint(x, y, -rot);
+        x = pt.x;
+        y = pt.y;
+      }
+      return {
+        x: x * canvas.width,
+        y: y * canvas.height,
+        fracX: x,
+        fracY: y
+      };
+    }
+
+    // Convert pointer event to unrotated fraction within container
+    function getContainerFraction(e, container) {
+      const rect = container.getBoundingClientRect();
+      let clientX, clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      let x = (clientX - rect.left) / rect.width;
+      let y = (clientY - rect.top) / rect.height;
+      const rot = getRotation(container);
+      if (rot) {
+        const pt = rotatePoint(x, y, -rot);
+        x = pt.x;
+        y = pt.y;
+      }
+      return { x, y };
+    }
+
+    // Convert unrotated fraction to display position on container
+    function fractionToStylePos(x, y, container) {
+      const rot = getRotation(container);
+      if (rot) {
+        const pt = rotatePoint(x, y, rot);
+        x = pt.x;
+        y = pt.y;
+      }
+      return { left: (x * 100) + '%', top: (y * 100) + '%' };
+    }
     
     // Upload functionality
     let uploadedMaps = {};
@@ -378,8 +459,10 @@
       }
       const activeMap = document.querySelector('.map-entry:not([style*="display: none"])');
       const mapId = activeMap.id;
+      const rotation = getRotation(activeMap);
       const boardData = {
         mapId: mapId,
+        rotation: rotation,
         drawings: getCurrentDrawingState().drawings,
         markers: mapMarkers[mapId]
       };
@@ -425,97 +508,36 @@
     let path = [];
     let drawingColor = currentRouteColor;
     
-    // Helper function to check if drawing is allowed (rotation must be 0 degrees)
+    // Drawing is now allowed at any rotation
     function isDrawingAllowed() {
-      // Find the currently visible map entry
-      let visibleMapEntry = null;
-      const allMapEntries = document.querySelectorAll('.map-entry');
-      
-      for (const entry of allMapEntries) {
-        if (entry.style.display !== 'none' && entry.offsetParent !== null) {
-          visibleMapEntry = entry;
-          break;
-        }
-      }
-      
-      if (!visibleMapEntry) {
-        return false;
-      }
-      
-      // Check if the map content has rotation at 0 degrees
-      const mapContent = visibleMapEntry.querySelector('.map-content');
-      if (!mapContent) {
-        return false;
-      }
-      
-      const rotation = parseInt(mapContent.getAttribute('data-rot') || '0', 10);
-      return rotation === 0;
+      return true;
     }
-    
-    // Helper function to show rotation warning
-    function showRotationWarning() {
-      const warning = document.getElementById("rotationWarning");
-      if (!warning) return;
-      warning.style.display = "block";
-      clearTimeout(warning._timeout);
-      warning._timeout = setTimeout(() => {
-        warning.style.display = "none";
-      }, 3000);
-    }
+
+    function showRotationWarning() {}
     
     function startDrawing(e) {
-      // Check if drawing is allowed (rotation must be 0 degrees)
-      if (!isDrawingAllowed()) {
-        showRotationWarning();
-        return;
-      }
-      
       isDrawing = true;
       const canvas = e.target;
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      // Capture the color at the start of drawing
       drawingColor = currentRouteColor;
-      const rect = canvas.getBoundingClientRect();
-      let x, y;
-      if (e.touches && e.touches.length > 0) {
-        x = (e.touches[0].clientX - rect.left) * (canvas.offsetWidth / rect.width);
-        y = (e.touches[0].clientY - rect.top) * (canvas.offsetHeight / rect.height);
-      } else {
-        x = (e.clientX - rect.left) * (canvas.offsetWidth / rect.width);
-        y = (e.clientY - rect.top) * (canvas.offsetHeight / rect.height);
-      }
-      path = [{ x, y }];
+      const coords = getCanvasCoords(e, canvas);
+      path = [{ x: coords.x, y: coords.y }];
       ctx.beginPath();
-      ctx.moveTo(x, y);
+      ctx.moveTo(coords.x, coords.y);
     }
     function draw(e) {
       if (!isDrawing) return;
-      
-      // Check if drawing is still allowed (rotation must be 0 degrees)
-      if (!isDrawingAllowed()) {
-        showRotationWarning();
-        isDrawing = false;
-        return;
-      }
-      
+
       const canvas = e.target;
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
       ctx.strokeStyle = drawingColor;
-      const rect = canvas.getBoundingClientRect();
-      let x, y;
-      if (e.touches && e.touches.length > 0) {
-        x = (e.touches[0].clientX - rect.left) * (canvas.offsetWidth / rect.width);
-        y = (e.touches[0].clientY - rect.top) * (canvas.offsetHeight / rect.height);
-      } else {
-        x = (e.clientX - rect.left) * (canvas.offsetWidth / rect.width);
-        y = (e.clientY - rect.top) * (canvas.offsetHeight / rect.height);
-      }
-      path.push({ x, y });
+      const coords = getCanvasCoords(e, canvas);
+      path.push({ x: coords.x, y: coords.y });
       ctx.lineWidth = 2;
-      ctx.lineTo(x, y);
+      ctx.lineTo(coords.x, coords.y);
       ctx.stroke();
       ctx.beginPath();
-      ctx.moveTo(x, y);
+      ctx.moveTo(coords.x, coords.y);
     }
     function stopDrawing(e) {
       if (!isDrawing) return;
@@ -826,6 +848,7 @@
       }, 100);
       
       redraw();
+      updateMarkers();
       // Update map label
       var mapLabel = document.getElementById('currentMapLabel');
       if (mapLabel) {
@@ -976,12 +999,6 @@
 
     // Add these functions to handle the new buttons
     function addMarkerGlobal() {
-      // Check if drawing is allowed (rotation must be 0 degrees)
-      if (!isDrawingAllowed()) {
-        showRotationWarning();
-        return;
-      }
-      
       const canvas = getActiveCanvas();
       const mapContainer = canvas ? canvas.parentElement : null;
       if (!canvas || !mapContainer) return;
@@ -1035,9 +1052,13 @@
       const savedBoards = JSON.parse(localStorage.getItem('savedBoards') || '{}');
       const boardData = savedBoards[boardName];
       if (!boardData) return;
-      
+
       // Switch to the correct map
       switchMap(boardData.mapId);
+
+      if (typeof boardData.rotation === 'number') {
+        setActiveMapRotation(boardData.rotation);
+      }
       
       // Restore drawings
       if (boardData.drawings) {
@@ -1070,8 +1091,11 @@
       const marker = document.createElement('div');
       marker.className = 'text-marker';
       marker.textContent = text;
-      marker.style.left = (x * 100) + '%';
-      marker.style.top = (y * 100) + '%';
+      const container = document.querySelector('.map-entry:not([style*="display: none"]) .map-container');
+      const pos = fractionToStylePos(x, y, container);
+      marker.style.left = pos.left;
+      marker.style.top = pos.top;
+      marker.style.transform = `rotate(${getRotation(container)}deg)`;
       marker.draggable = true;
       marker.tabIndex = 0;
       marker.setAttribute('aria-label', `Tactical marker: ${text}`);
@@ -1082,12 +1106,6 @@
       marker.style.color = getContrastYIQ(markerColor);
       // Drag logic (mouse)
       marker.addEventListener('dragstart', function(e) {
-        // Check if drawing is allowed (rotation must be 0 degrees)
-        if (!isDrawingAllowed()) {
-          showRotationWarning();
-          e.preventDefault();
-          return;
-        }
         e.dataTransfer.setData('text/plain', '');
         this.style.opacity = '0.5';
         marker._dragStartX = e.clientX;
@@ -1096,25 +1114,19 @@
         marker._origTop = parseFloat(marker.style.top);
       });
       marker.addEventListener('dragend', function(e) {
-        // Check if drawing is allowed (rotation must be 0 degrees)
-        if (!isDrawingAllowed()) {
-          showRotationWarning();
-          this.style.opacity = '1';
-          return;
-        }
         this.style.opacity = '1';
         const mapContainer = marker.parentElement;
-        const rect = mapContainer.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width;
-        const y = (e.clientY - rect.top) / rect.height;
-        this.style.left = (x * 100) + '%';
-        this.style.top = (y * 100) + '%';
+        const pos = getContainerFraction(e, mapContainer);
+        const stylePos = fractionToStylePos(pos.x, pos.y, mapContainer);
+        this.style.left = stylePos.left;
+        this.style.top = stylePos.top;
+        this.style.transform = `rotate(${getRotation(mapContainer)}deg)`;
         // Update marker in array
         const markers = getCurrentMarkers();
         const idx = Array.from(mapContainer.querySelectorAll('.text-marker')).indexOf(marker);
         if (markers[idx]) {
-          markers[idx].x = x;
-          markers[idx].y = y;
+          markers[idx].x = pos.x;
+          markers[idx].y = pos.y;
           // Auto-save uploaded map data
           if (currentMap.startsWith('uploaded_')) {
             saveUploadedMaps();
@@ -1123,61 +1135,35 @@
       });
       // Touch drag logic
       let touchDragging = false;
-      let touchStartX, touchStartY, origLeft, origTop;
       marker.addEventListener('touchstart', function(e) {
-        // Check if drawing is allowed (rotation must be 0 degrees)
-        if (!isDrawingAllowed()) {
-          showRotationWarning();
-          return;
-        }
         if (e.touches.length !== 1) return;
         touchDragging = true;
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-        origLeft = parseFloat(marker.style.left);
-        origTop = parseFloat(marker.style.top);
         marker.style.opacity = '0.5';
       }, { passive: false });
       marker.addEventListener('touchmove', function(e) {
         if (!touchDragging || e.touches.length !== 1) return;
-        // Check if drawing is allowed (rotation must be 0 degrees)
-        if (!isDrawingAllowed()) {
-          showRotationWarning();
-          touchDragging = false;
-          marker.style.opacity = '1';
-          return;
-        }
         e.preventDefault();
         const mapContainer = marker.parentElement;
-        const rect = mapContainer.getBoundingClientRect();
-        const dx = e.touches[0].clientX - touchStartX;
-        const dy = e.touches[0].clientY - touchStartY;
-        // Convert px to %
-        const newLeft = ((origLeft / 100) * rect.width + dx) / rect.width * 100;
-        const newTop = ((origTop / 100) * rect.height + dy) / rect.height * 100;
-        marker.style.left = newLeft + '%';
-        marker.style.top = newTop + '%';
+        const pos = getContainerFraction(e, mapContainer);
+        const stylePos = fractionToStylePos(pos.x, pos.y, mapContainer);
+        marker.style.left = stylePos.left;
+        marker.style.top = stylePos.top;
       }, { passive: false });
       marker.addEventListener('touchend', function(e) {
         if (!touchDragging) return;
         touchDragging = false;
         marker.style.opacity = '1';
-        // Check if drawing is allowed (rotation must be 0 degrees)
-        if (!isDrawingAllowed()) {
-          showRotationWarning();
-          return;
-        }
         const mapContainer = marker.parentElement;
-        const rect = mapContainer.getBoundingClientRect();
-        const left = parseFloat(marker.style.left) / 100;
-        const top = parseFloat(marker.style.top) / 100;
-        // Update marker in array
+        const pos = getContainerFraction(e, mapContainer);
+        const stylePos = fractionToStylePos(pos.x, pos.y, mapContainer);
+        marker.style.left = stylePos.left;
+        marker.style.top = stylePos.top;
+        marker.style.transform = `rotate(${getRotation(mapContainer)}deg)`;
         const markers = getCurrentMarkers();
         const idx = Array.from(mapContainer.querySelectorAll('.text-marker')).indexOf(marker);
         if (markers[idx]) {
-          markers[idx].x = left;
-          markers[idx].y = top;
-          // Auto-save uploaded map data
+          markers[idx].x = pos.x;
+          markers[idx].y = pos.y;
           if (currentMap.startsWith('uploaded_')) {
             saveUploadedMaps();
           }
@@ -1185,11 +1171,6 @@
       }, { passive: false });
       // Double-click to edit
       marker.addEventListener('dblclick', function() {
-        // Check if drawing is allowed (rotation must be 0 degrees)
-        if (!isDrawingAllowed()) {
-          showRotationWarning();
-          return;
-        }
         const newText = prompt('Edit marker text:', marker.textContent);
         if (newText) {
           marker.textContent = newText;
@@ -1212,11 +1193,6 @@
       // Right-click to delete
       marker.addEventListener('contextmenu', function(e) {
         e.preventDefault();
-        // Check if drawing is allowed (rotation must be 0 degrees)
-        if (!isDrawingAllowed()) {
-          showRotationWarning();
-          return;
-        }
         const mapContainer = marker.parentElement;
         const markers = getCurrentMarkers();
         const idx = Array.from(mapContainer.querySelectorAll('.text-marker')).indexOf(marker);
@@ -1837,6 +1813,26 @@
     document.addEventListener('DOMContentLoaded', renderUploads);
 
     // Robust map rotation logic - targets .map-content to rotate both image and canvas together
+    function setActiveMapRotation(rot) {
+      const activeMapContent = document.querySelector('.map-entry:not([style*="display: none"]) .map-content');
+      if (!activeMapContent) return;
+
+      activeMapContent.classList.remove('rot-90', 'rot-180', 'rot-270');
+      rot = ((rot % 360) + 360) % 360;
+
+      if (rot === 90) {
+        activeMapContent.classList.add('rot-90');
+      } else if (rot === 180) {
+        activeMapContent.classList.add('rot-180');
+      } else if (rot === 270) {
+        activeMapContent.classList.add('rot-270');
+      }
+
+      activeMapContent.setAttribute('data-rot', rot);
+      updateMarkers();
+    }
+
+    // Increment rotation by 90 degrees
     function rotateActiveMap() {
       // Find the currently visible map entry by checking all map entries
       let visibleMapEntry = null;
@@ -1861,25 +1857,11 @@
         return;
       }
       
-      // Remove any previous rotation classes
-      activeMapContent.classList.remove('rot-90', 'rot-180', 'rot-270');
-      
-      // Get current rotation from data attribute
       let rot = parseInt(activeMapContent.getAttribute('data-rot') || '0', 10);
       rot = (rot + 90) % 360;
-      
-      // Apply the correct rotation class to sync image and canvas rotation
-      if (rot === 90) {
-        activeMapContent.classList.add('rot-90');
-      } else if (rot === 180) {
-        activeMapContent.classList.add('rot-180');
-      } else if (rot === 270) {
-        activeMapContent.classList.add('rot-270');
-      }
-      
-      // Save current rotation
-      activeMapContent.setAttribute('data-rot', rot);
-      
+
+      setActiveMapRotation(rot);
+
       // Debug log
       console.log('Rotated map to', rot, 'degrees');
       console.log('Active map content:', activeMapContent);
