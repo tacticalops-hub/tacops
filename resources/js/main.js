@@ -1089,6 +1089,7 @@
       const pos = fractionToStylePos(x, y, container);
       marker.style.left = pos.left;
       marker.style.top = pos.top;
+      marker.style.transform = `rotate(${getRotation(container)}deg)`;
       marker.draggable = true;
       marker.tabIndex = 0;
       marker.setAttribute('aria-label', `Tactical marker: ${text}`);
@@ -1113,6 +1114,7 @@
         const stylePos = fractionToStylePos(pos.x, pos.y, mapContainer);
         this.style.left = stylePos.left;
         this.style.top = stylePos.top;
+        this.style.transform = `rotate(${getRotation(mapContainer)}deg)`;
         // Update marker in array
         const markers = getCurrentMarkers();
         const idx = Array.from(mapContainer.querySelectorAll('.text-marker')).indexOf(marker);
@@ -1150,6 +1152,7 @@
         const stylePos = fractionToStylePos(pos.x, pos.y, mapContainer);
         marker.style.left = stylePos.left;
         marker.style.top = stylePos.top;
+        marker.style.transform = `rotate(${getRotation(mapContainer)}deg)`;
         const markers = getCurrentMarkers();
         const idx = Array.from(mapContainer.querySelectorAll('.text-marker')).indexOf(marker);
         if (markers[idx]) {
