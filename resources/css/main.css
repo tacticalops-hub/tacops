@@ -1,4 +1,6 @@
-  <style>
+    html {
+      background-color: #111;
+    }
     body {
       margin: 0;
       padding: 0;
@@ -24,6 +26,7 @@
       transition: transform 0.3s ease;
       transform: translateX(0);
       overflow-y: auto !important;
+      overflow-x: hidden;
       max-height: 100vh !important;
     }
 
@@ -35,7 +38,7 @@
     }
 
     .map-selector {
-      width: 220px;
+      width: 100%;
       background: #181c24;
       border-radius: 12px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.18);
@@ -656,4 +659,3 @@
       border: 3px dashed #f00 !important; /* DEBUG: show border when rotated */
       background: rgba(0,255,255,0.08) !important; /* DEBUG: show bg when rotated */
     }
-  </style>
