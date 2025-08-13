@@ -5,7 +5,7 @@
       document.getElementById('update-btn').style.display = 'block';
     }
 
-  navigator.serviceWorker.register('./sw.js').then(reg => {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
       registration = reg;
       if (reg.waiting) {
         showUpdateButton();
