@@ -1,5 +1,5 @@
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./resources/js/sw.js').then(reg => {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
       if (reg.waiting) {
         document.getElementById('update-btn').style.display = 'block';
       }
