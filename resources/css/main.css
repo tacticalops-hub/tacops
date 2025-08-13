@@ -38,7 +38,7 @@
     }
 
     .map-selector {
-      width: 220px;
+      width: 100%;
       background: #181c24;
       border-radius: 12px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.18);
