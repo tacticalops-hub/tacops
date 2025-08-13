@@ -8,7 +8,7 @@ const urlsToCache = [
   './resources/js/main.js',
   './resources/js/ui.js',
   './resources/js/sw-register.js',
-  './resources/js/sw.js',
+  './sw.js',
   // Icons
   './resources/icons/icon-72x72.png',
   './resources/icons/icon-96x96.png',
@@ -135,4 +135,4 @@ self.addEventListener('notificationclick', event => {
       clients.openWindow('./')
     );
   }
-}); 
+});
