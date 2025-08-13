@@ -1,4 +1,6 @@
-  <style>
+    html {
+      background-color: #111;
+    }
     body {
       margin: 0;
       padding: 0;
@@ -24,6 +26,7 @@
       transition: transform 0.3s ease;
       transform: translateX(0);
       overflow-y: auto !important;
+      overflow-x: hidden;
       max-height: 100vh !important;
     }
 
@@ -35,7 +38,7 @@
     }
 
     .map-selector {
-      width: 220px;
+      width: 100%;
       background: #181c24;
       border-radius: 12px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.18);
@@ -102,6 +105,7 @@
       font-size: 1rem;
       transition: background 0.2s;
       cursor: pointer;
+      box-sizing: border-box;
     }
 
     .whiteboard-controls button:hover {
@@ -146,7 +150,8 @@
 
     .map-container {
       position: relative;
-      width: fit-content;
+      width: 100%;
+      max-width: 100%;
       height: auto;
       margin: 0 auto;
       max-height: 100vw;
@@ -155,7 +160,7 @@
 
     .map-container img {
       display: block;
-      max-width: 100%;
+      width: 100%;
       height: auto;
     }
 
@@ -165,6 +170,8 @@
       left: 0;
       cursor: crosshair;
       border: 2px solid #00ff00;
+      max-width: 100%;
+      height: auto;
       /* width: auto !important; */
       /* height: auto !important; */
     }
@@ -261,6 +268,7 @@
       border: 1px solid #444;
       border-radius: 8px;
       font-size: 1rem;
+      box-sizing: border-box;
     }
 
     .board-select {
@@ -272,6 +280,7 @@
       border: 1px solid #444;
       border-radius: 8px;
       font-size: 1rem;
+      box-sizing: border-box;
     }
 
     .board-input:focus,
@@ -510,7 +519,7 @@
     }
 
     .upload-section {
-      width: 220px;
+      width: 100%;
       background: #181c24;
       border-radius: 12px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.18);
@@ -542,6 +551,7 @@
       cursor: pointer;
       transition: background 0.2s, color 0.2s;
       outline: none;
+      box-sizing: border-box;
     }
 
     .upload-btn:hover {
@@ -635,6 +645,7 @@
       display: inline-block;
       position: relative;
       transition: transform 0.3s ease !important;
+      max-width: 100%;
     }
     
     /* Map rotation classes - applied to .map-content to rotate both image and canvas together */
@@ -656,4 +667,3 @@
       border: 3px dashed #f00 !important; /* DEBUG: show border when rotated */
       background: rgba(0,255,255,0.08) !important; /* DEBUG: show bg when rotated */
     }
-  </style>
