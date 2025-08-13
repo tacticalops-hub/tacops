@@ -1,5 +1,3 @@
-self.skipWaiting();
-
 const CACHE_NAME = 'tacops-v2';
 const urlsToCache = [
   './index.html',
@@ -57,9 +55,8 @@ const urlsToCache = [
   './resources/images/cage.png'
 ];
 
-// Install event - cache resources and activate new SW immediately
+// Install event - cache resources
 self.addEventListener('install', event => {
-  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(urlsToCache))
@@ -75,6 +72,13 @@ self.addEventListener('activate', event => {
       )
     ).then(() => self.clients.claim())
   );
+});
+
+// Handle messages from the page
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 // Fetch event - cache-first
